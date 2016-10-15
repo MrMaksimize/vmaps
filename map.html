@@ -78,8 +78,11 @@
               if (data.result.parameters.location['zip-code']) {
                   geocoder.query(data.result.parameters.location['zip-code']);
               }
-              else if (data.result.parameters.location['streetAddress']) {
-                  geocoder.query(data.result.parameters.location['streetAddress'])
+              else if (data.result.parameters.location['street-address']) {
+                  geocoder.query(data.result.parameters.location['street-address'])
+              }
+              else if (data.result.parameters.location['geo-city-us']) {
+                  geocoder.query(data.result.parameters.location['geo-city-us'])
               }
           }
 
