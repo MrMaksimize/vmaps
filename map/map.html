@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src="../bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <link rel="import" href="../bower_components/polymer/polymer.html">
+    <link rel="import" href="../components/vk-map.html">
+    <title></title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        vk-map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <template is="dom-bind">
+    <vk-map lat-lon="[[latLon]]" zoom-level="7"></vk-map>
+    <!--<vk-geocoder place-data="{{placeData}}" lat-lon="{{latLon}}"></vk-geocoder>
+    <vk-api access-token="" base-url="" phrase="[[phrase]]" response="{{placeData}}">
+    </vk-api>
+    <vk-voice-search active phrase="{{phrase}}"></vk-voice-search>-->
+    </template>
+
+
+
+    <script src='http://mrm-screen.s3.amazonaws.com/api.ai.min.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v1.3.1/mapbox-gl-geocoder.js'></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
+</body>
+
+</html>

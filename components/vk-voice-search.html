@@ -1,0 +1,59 @@
+<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+<dom-module id="vk-voice-search">
+    <style>
+        #voice-search {
+            }
+    </style>
+    <link rel="import" href="../bower_components/polymer/polymer.html" />
+    <template>
+        <div id="voice-search"></div>
+    </template>
+</dom-module>
+
+<script type="text/javascript">
+    Polymer({
+        is: 'vk-voice-search',
+        properties: {
+            /**
+            * latLon listen from the outside world for a new lat/lon pair (i.e.)
+            * a pair of coordinates) and update the map with the result.
+            *
+            * @property latLon
+            * @type Array
+            * @default [-74.50, 40]
+            */
+            latLon: {
+                type: Array,
+                value: function(){
+                    return [-74.50, 40]
+                },
+            },
+
+            zoomLevel: {
+                type: Number,
+                value: 9
+            }
+        },
+
+        observers: ['_updateMap(latLon.0,latLon.1)'],
+
+        attached: function() {
+            mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
+            this.map = new mapboxgl.Map({
+                container: 'map', // container id
+                style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+                center: this.latLon, // starting position
+                zoom: this.zoomLevel // starting zoom
+            });
+        },
+
+        _updateMap: function() {
+            console.log('update');
+            if (this.map) {
+                this.map.flyTo({
+                   center: this.latLon
+                });
+            }
+        }
+    });
+</script>

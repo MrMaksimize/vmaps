@@ -1,0 +1,22 @@
+{
+  "name": "vmaps",
+  "homepage": "https://github.com/MrMaksimize/vmaps",
+  "authors": [
+    "Maksim Pecherskiy <max@maksimize.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "^1.7.0",
+    "webcomponentsjs": "^0.7.23"
+  }
+}
