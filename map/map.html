@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v1.3.1/mapbox-gl-geocoder.css' type='text/css' />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id='map'></div>
+    <script>
+        $(document).ready(function() {
+            console.log('hi');
+            mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
+            var map = new mapboxgl.Map({
+                container: 'map', // container id
+                style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+                center: [-74.50, 40], // starting position
+                zoom: 9 // starting zoom
+            });
+            var geocoder = new mapboxgl.Geocoder();
+            //map.addControl(geocoder);
+
+            var accessToken = '2ddcc06c5f9b4afcb7b7287b5c76db70';
+            var baseUrl = 'https://api.api.ai/v1/'
+            var sendToAi = function(phrase) {
+                $.ajax({
+                    type: "POST",
+                    url: baseUrl + "query?v=20150910",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    headers: {
+                        "Authorization": "Bearer " + accessToken
+                    },
+                    data: JSON.stringify({
+                        q: phrase,
+                        lang: "en",
+                        sessionId: "map-1"
+                    }),
+                    success: function(data) {
+                        setResponse(data);
+                    },
+                    error: function() {
+                        setResponse("Internal Server Error");
+                    }
+                });
+            }
+
+
+
+            setResponse = function(data) {
+                console.log(data);
+                console.log(data.result.action);
+                console.log(data.result.parameters);
+
+
+
+
+                var status = data.status;
+                var code;
+                if (!(status && (code = status.code) && isFinite(parseFloat(code)) && code < 300 && code > 199)) {
+                    text.innerHTML = JSON.stringify(status);
+                    return;
+                }
+                if (data.result.parameters.location['zip-code']) {
+                    geocoder.query(data.result.parameters.location['zip-code']);
+                } else if (data.result.parameters.location['street-address']) {
+                    geocoder.query(data.result.parameters.location['street-address'])
+                } else if (data.result.parameters.location['geo-city-us']) {
+                    geocoder.query(data.result.parameters.location['geo-city-us'])
+                }
+            }
+
+            if (annyang) {
+                console.log(annyang);
+                annyang.setLanguage('en-US');
+                annyang.addCallback('result', function(phrases) {
+                    sendToAi(phrases[0]);
+                });
+
+                annyang.addCallback('start', function() {
+                    console.log('start')
+                });
+                annyang.addCallback('soundStart', function() {
+                    console.log('soundStart')
+                });
+                annyang.addCallback('end', function() {
+                    console.log('end')
+                })
+                annyang.start();
+                annyang.debug(newState = true);
+                //annyang.start({ autoRestart: true, continuous: true });
+                console.log('a run');
+            }
+
+
+
+
+        });
+    </script>
+
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.js'></script>
+    <script src='http://mrm-screen.s3.amazonaws.com/api.ai.min.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v1.3.1/mapbox-gl-geocoder.js'></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
+</body>
+
+</html>
