@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "polymer": "^1.7.0",
-    "webcomponentsjs": "^0.7.23"
+    "webcomponentsjs": "^0.7.23",
+    "iron-icons": "^1.2.0"
   }
 }

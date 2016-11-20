@@ -8,6 +8,7 @@
     <link rel="import" href="../bower_components/polymer/polymer.html">
     <link rel="import" href="../components/vk-map.html">
     <link rel="import" href="../components/vk-voice-search.html">
+    <link rel="import" href="../components/vk-icon-toggle.html">
     <title></title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <style>
@@ -22,6 +23,16 @@
             bottom: 0;
             width: 100%;
         }
+        vk-voice-search {
+            background: white;
+            width: 33%;
+            height: 100px;
+            display: block;
+            z-index: 999999;
+            position: relative;
+            left:33%;
+            color: black;
+        }
 
 
     </style>
@@ -29,9 +40,9 @@
 
 <body>
     <template is="dom-bind">
-    <vk-voice-search active phrase="{{phrase}}"></vk-voice-search>
+    <vk-voice-search active={{active}} phrase="{{phrase}}"></vk-voice-search>
     <!--$$('vk-map')[0].set('latLon', [-81, 20]) -->
-    <vk-map lat-lon="[[latLon]]" zoom-level="7"></vk-map>
+    <!--<vk-map lat-lon="[[latLon]]" zoom-level="7"></vk-map>-->
     <!--<vk-geocoder place-data="{{placeData}}" lat-lon="{{latLon}}"></vk-geocoder>
     <vk-api access-token="" base-url="" phrase="[[phrase]]" response="{{placeData}}">
     </vk-api> -->

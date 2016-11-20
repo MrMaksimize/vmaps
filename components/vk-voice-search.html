@@ -1,20 +1,20 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer.html" />
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="./vk-icon-toggle.html">
 <dom-module id="vk-voice-search">
     <style>
-        #voice-search {
-            background: black;
-            width: 33%;
-            height: 100px;
-            display: block;
-            z-index: 999999;
-            position: relative;
-            left:33%;
-            color: white;
-        }
+      :host {
+        --icon-toggle-color: lightgrey;
+        --icon-toggle-outline-color: black;
+        --icon-toggle-pressed-color: red;        
+        font-family: sans-serif;
+      };
     </style>
-    <link rel="import" href="../bower_components/polymer/polymer.html" />
     <template>
         <div id="voice-search">[[phrase]]</div>
+        <input id="voice-search" value="{{phrase::change}}">
+        <!--<vk-icon-toggle toggle-icon="star" active={{active}}></vk-icon-toggle>-->
     </template>
 </dom-module>
 
@@ -24,7 +24,8 @@
         properties: {
           active: {
               type: Boolean,
-              value: false
+              value: false,
+              reflectToAttribute: true
           },
         /**
         * phrase broadcasts the current active phrase.
@@ -35,7 +36,7 @@
         */
         phrase: {
             type: String,
-            value: "Hello"
+            value: "Say something..."
         }
         },
 
