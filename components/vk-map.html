@@ -52,17 +52,24 @@
                 zoom: this.zoomLevel // starting zoom
             });
             this.map.on('load', function () {
+               /* var myLayer = L.mapbox.featureLayer()
+                .loadURL('http://127.0.0.1:8080/gid.geojson')
+                .addTo(this);*/
                 
                 this.addSource("gid", {
                     "type": "geojson",
-                    "data": "./../gid.geojson"
+                    "data": "http://127.0.0.1:8080/gid.geojson"
                 });
 
                 this.addLayer({
                     "id": "gid",
                     "type": "symbol",
-                    "source": "gid"
+                    "source": "gid",
+                    "layout": {
+                        "icon-image": "rocket-15"
+                    }
                 });
+
             });       
         },
 
