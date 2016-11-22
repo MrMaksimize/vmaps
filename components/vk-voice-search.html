@@ -38,18 +38,24 @@
               value: false,
               reflectToAttribute: true
           },
-        /**
-        * phrase broadcasts the current active phrase.
-        *
-        * @property phrase
-        * @type String
-        * @default ""
-        */
-        phrase: {
-            type: String,
-            value: "Say something...",
-            observer: '_phraseChanged'
-        }
+            /**
+            * phrase broadcasts the current active phrase.
+            *
+            * @property phrase
+            * @type String
+            * @default ""
+            */
+            phrase: {
+                type: String,
+                value: "Say something...",
+                observer: '_phraseChanged'
+            },
+            geoSearchTerm: {
+                type: String,
+                value: "",
+                notify: true,
+                reflectToAttribute: true
+            }
         },
 
         ready: function() {
@@ -61,14 +67,20 @@
            data = this.$.ajax.lastResponse;
            if (data.result.parameters.location['zip-code']) {
              //geocoder.query(data.result.parameters.location['zip-code']);
-             console.log("zip-code " + data.result.parameters.location['zip-code'])
+             result = data.result.parameters.location['zip-code'];
+             console.log("zip-code " + result)
            } else if (data.result.parameters.location['street-address']) {
              //geocoder.query(data.result.parameters.location['street-address'])
-             console.log("street-address " + data.result.parameters.location['street-address'])
+             result = data.result.parameters.location['street-address'];
+             console.log("street-address " + result)
            } else if (data.result.parameters.location['geo-city-us']) {
              //geocoder.query(data.result.parameters.location['geo-city-us'])
-             console.log("geo-city-us " + data.result.parameters.location['geo-city-us'])
+             result = data.result.parameters.location['geo-city-us']
+             console.log("geo-city-us " + result)
            }
+           // TODO - this parsing needs to be better.
+           console.log(result);
+           this.geoSearchTerm = result;
         },
         _phraseChanged: function(newPhrase, oldPhrase) {
             console.log(newPhrase);
