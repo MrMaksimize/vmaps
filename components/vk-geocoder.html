@@ -36,11 +36,7 @@
             computedLatLon: {
                 type: Array,
                 notify: true,
-                reflectToAttribute: true,
-                observer: '_debugLatLonChange',
-                value: function(){
-                    return [-74.50, 40]
-                }
+                reflectToAttribute: true
             }
         },
 
@@ -60,10 +56,6 @@
            response = this.$.geocoder.lastResponse;
            console.log(response.features[0].geometry.coordinates);
            this.computedLatLon = response.features[0].geometry.coordinates;
-        },
-        _debugLatLonChange: function(newEl, old) {
-            console.log('ll change');
-            console.log(newEl);
         }
     });
 </script>

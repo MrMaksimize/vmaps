@@ -31,7 +31,7 @@
             latLon: {
                 type: Array,
                 value: function(){
-                    return [-74.50, 40]
+                    return [-117.16, 32.71]
                 },
             },
 
@@ -51,6 +51,19 @@
                 center: this.latLon, // starting position
                 zoom: this.zoomLevel // starting zoom
             });
+            this.map.on('load', function () {
+                
+                this.addSource("gid", {
+                    "type": "geojson",
+                    "data": "./../gid.geojson"
+                });
+
+                this.addLayer({
+                    "id": "gid",
+                    "type": "symbol",
+                    "source": "gid"
+                });
+            });       
         },
 
         _updateMap: function() {
