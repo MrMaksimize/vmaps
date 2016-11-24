@@ -58,7 +58,8 @@
                 style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
                 center: this.latLon, // starting position
                 zoom: this.zoomLevel // starting zoom
-            });      
+            });
+            this.map.layerList = [];     
         },
 
         _updateMap: function(newVal, oldVal) {
@@ -73,22 +74,31 @@
         },
 
         _updateMapData: function() {
-            console.log(this.dataSets);
-            if (this.dataSets.length != 0) {
-                this.map.addSource("meters", {
+            if (this.dataSets.length == 0 && this.map) {
+                console.log('Clearing Map');
+                for (var i = 0; i < this.map.layerList.length; i++) {
+                    var dataSet = this.map.layerList[i];
+                    this.map.setLayoutProperty(dataSet, 'visibility', 'none');
+                }
+            }
+            for (var i = 0; i < this.dataSets.length; i++) {
+                console.log(this.dataSets[i]);
+                var dataSet = this.dataSets[i];
+                //console.log(this.map.getLayers());
+                this.map.addSource(dataSet, {
                     "type": "geojson",
-                    "data": "./parking_meters.geojson"
+                    "data": "./" + dataSet + ".geojson"
                 });
-
                 this.map.addLayer({
-                    "id": "meters",
+                    "id": dataSet,
                     "type": "symbol",
-                    "source": "meters",
+                    "source": dataSet,
                     "layout": {
                         "icon-image": "rocket-15"
                     }
-                });           
-            } 
+                });
+                this.map.layerList.push(dataSet);   
+            }
         }
     });
 </script>
