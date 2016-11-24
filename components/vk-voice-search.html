@@ -60,7 +60,14 @@
                 type: Array,
                 notify: true,
                 reflectToAttribute: true
+            },
+            zoomLevel: {
+                type: Number,
+                value: 7,
+                notify: true,
+                reflectToAttribute: true
             }
+            
         },
 
         ready: function() {
@@ -71,25 +78,29 @@
            console.log(this.$.ajax.lastResponse);
            data = this.$.ajax.lastResponse;
            if (data.result.action == 'load_dataset') {
-               this.dataSets = ['parking_meters'];
+               this.dataSets = data.result.parameters.dataset;
            }
            if (data.result.parameters.location['zip-code']) {
              //geocoder.query(data.result.parameters.location['zip-code']);
              result = data.result.parameters.location['zip-code'];
+             zoom = 10;
              console.log("zip-code " + result)
            } else if (data.result.parameters.location['street-address']) {
              //geocoder.query(data.result.parameters.location['street-address'])
              result = data.result.parameters.location['street-address'];
+             zoom = 15
              console.log("street-address " + result)
            } else if (data.result.parameters.location['geo-city-us']) {
              //geocoder.query(data.result.parameters.location['geo-city-us'])
              result = data.result.parameters.location['geo-city-us']
+             zoom = 15
              console.log("geo-city-us " + result)
            }
 
            // TODO - this parsing needs to be better.
            console.log(result);
            this.geoSearchTerm = result;
+           this.zoomLevel = zoom;
         },
         _phraseChanged: function(newPhrase, oldPhrase) {
             console.log(newPhrase);

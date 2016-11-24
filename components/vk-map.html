@@ -42,7 +42,10 @@
             },
             zoomLevel: {
                 type: Number,
-                value: 9
+                // can't figure out why i can't provide default here.
+                value: function(){
+                    return 7;
+                }
             }
         },
 
@@ -59,10 +62,12 @@
         },
 
         _updateMap: function() {
+            console.log(this.zoomLevel);
             console.log('UPDATE MAP');
             if (this.map) {
                 this.map.flyTo({
-                   center: this.latLon
+                   center: this.latLon,
+                   zoom: this.zoomLevel
                 });
             }
         },

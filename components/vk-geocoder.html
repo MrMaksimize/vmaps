@@ -44,7 +44,14 @@
         },
         _geoSearchTermChanged: function(newSearchterm, oldSearchterm) {
             if (newSearchterm) {
-                this.$.geocoder.url = "http://search.mapzen.com/v1/search?api_key=mapzen-rqEDCPe&text=" + newSearchterm;
+                params = {
+                    'api_key': "mapzen-rqEDCPe",
+                    'text': newSearchterm,
+                    'size': 1,
+                    'boundary.country': 'US'
+                }
+                this.$.geocoder.url = "http://search.mapzen.com/v1/search";
+                this.$.geocoder.params = params;
                 this.$.geocoder.generateRequest();
             }
          },
