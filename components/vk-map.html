@@ -49,7 +49,7 @@
             }
         },
 
-        observers: ['_updateMap(latLon.0,latLon.1)', '_updateMapData(dataSets.1)'],
+        observers: ['_updateMap(latLon.0,latLon.1, zoomLevel)', '_updateMapData(dataSets.1)'],
 
         attached: function() {
             mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
@@ -61,9 +61,9 @@
             });      
         },
 
-        _updateMap: function() {
+        _updateMap: function(newVal, oldVal) {
             console.log(this.zoomLevel);
-            console.log('UPDATE MAP');
+            console.log('UPDATE MAP oldVal:' + oldVal + ' newVal:' + newVal);
             if (this.map) {
                 this.map.flyTo({
                    center: this.latLon,

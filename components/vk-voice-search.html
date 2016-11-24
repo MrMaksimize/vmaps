@@ -93,30 +93,48 @@
         _handleResponse: function(request) {
            console.log(this.$.ajax.lastResponse);
            data = this.$.ajax.lastResponse;
+           if (data.result.action == 'change_zoom') {
+
+               if (data.result.parameters.zoom_action == 'to') {
+                   zoom = data.result.parameters.zoom_number;
+                   console.log(this);
+               }
+               else if (data.result.parameters.zoom_action == 'in') {
+                   zoom = this.zoomLevel + (data.result.parameters.zoom_number || 1)
+               }
+               else if (data.result.parameters.zoom_action == 'out') {
+                   zoom = this.zoomLevel - (data.result.parameters.zoom_number || 1)
+               }
+               else {
+                   // TODO fix this
+                   alert("I Don't Know What You Mean");
+               }
+               
+               console.log(zoom);
+               this.zoomLevel = zoom;
+           }
            if (data.result.action == 'load_dataset') {
                this.dataSets = data.result.parameters.dataset;
            }
-           if (data.result.parameters.location['zip-code']) {
-             //geocoder.query(data.result.parameters.location['zip-code']);
-             result = data.result.parameters.location['zip-code'];
-             zoom = 10;
-             console.log("zip-code " + result)
-           } else if (data.result.parameters.location['street-address']) {
-             //geocoder.query(data.result.parameters.location['street-address'])
-             result = data.result.parameters.location['street-address'];
-             zoom = 15
-             console.log("street-address " + result)
-           } else if (data.result.parameters.location['geo-city-us']) {
-             //geocoder.query(data.result.parameters.location['geo-city-us'])
-             result = data.result.parameters.location['geo-city-us']
-             zoom = 15
-             console.log("geo-city-us " + result)
+           if (data.result.parameters.location) {
+                if (data.result.parameters.location['zip-code']) {
+                    //geocoder.query(data.result.parameters.location['zip-code']);
+                    result = data.result.parameters.location['zip-code'];
+                    zoom = 10;
+                } else if (data.result.parameters.location['street-address']) {
+                    //geocoder.query(data.result.parameters.location['street-address'])
+                    result = data.result.parameters.location['street-address'];
+                    zoom = 15;
+                    console.log("street-address " + result)
+                } else if (data.result.parameters.location['geo-city-us']) {
+                    //geocoder.query(data.result.parameters.location['geo-city-us'])
+                    result = data.result.parameters.location['geo-city-us']
+                    zoom = 11;
+                    console.log("geo-city-us " + result)
+                }
+                this.geoSearchTerm = result;
+                this.zoomLevel = zoom;
            }
-
-           // TODO - this parsing needs to be better.
-           console.log(result);
-           this.geoSearchTerm = result;
-           this.zoomLevel = zoom;
         },
         _phraseChanged: function(newPhrase, oldPhrase) {
             console.log(newPhrase);
