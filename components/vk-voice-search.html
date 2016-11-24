@@ -5,16 +5,32 @@
 <link rel="import" href="./vk-icon-toggle.html">
 <dom-module id="vk-voice-search">
     <style>
+      #voice-search-display {
+        position: relative;
+        width: 100%;
+        text-align: center;
+        height:35px;
+        margin-top:10px;
+        top:10px;
+      }
+      #voice-search-input {
+          width:80%;
+          height:20px;
+          position:relative;
+          left:10%;
+          font-size: 15px;
+          margin-top: 10px;
+      }
       :host {
         --icon-toggle-color: lightgrey;
         --icon-toggle-outline-color: black;
         --icon-toggle-pressed-color: red;        
-        font-family: sans-serif;
+        font-family: Open Sans;
       };
     </style>
     <template>
-        <div id="voice-search">[[phrase]]</div>
-        <input id="voice-search" value="{{phrase::change}}"></input>
+        <div id="voice-search-display">[[phrase]]</div>
+        <input id="voice-search-input" value="{{phrase::change}}"></input>
         <iron-ajax
             id="ajax"
             url="https://api.api.ai/v1/query?v=20150910"
