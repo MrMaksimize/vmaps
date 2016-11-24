@@ -37,16 +37,12 @@
                 type: Array,
                 notify: true,
                 reflectToAttribute: true
-            }
+            },
         },
 
         ready: function() {
-            console.log('ready');
-            //this.$['voice-search'].textContent = this.phrase;
         },
         _geoSearchTermChanged: function(newSearchterm, oldSearchterm) {
-            console.log(newSearchterm);
-            console.log(oldSearchterm);
             if (newSearchterm) {
                 this.$.geocoder.url = "http://search.mapzen.com/v1/search?api_key=mapzen-rqEDCPe&text=" + newSearchterm;
                 this.$.geocoder.generateRequest();
@@ -54,7 +50,6 @@
          },
         _handleResponse: function(request) {
            response = this.$.geocoder.lastResponse;
-           console.log(response.features[0].geometry.coordinates);
            this.computedLatLon = response.features[0].geometry.coordinates;
         }
     });

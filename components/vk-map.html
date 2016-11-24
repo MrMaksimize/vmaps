@@ -34,14 +34,19 @@
                     return [-117.16, 32.71]
                 },
             },
-
+            dataSets: {
+                type: Array,
+                value: function(){
+                    return [];
+                },
+            },
             zoomLevel: {
                 type: Number,
                 value: 9
             }
         },
 
-        observers: ['_updateMap(latLon.0,latLon.1)'],
+        observers: ['_updateMap(latLon.0,latLon.1)', '_updateMapData(dataSets.1)'],
 
         attached: function() {
             mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
@@ -50,36 +55,35 @@
                 style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
                 center: this.latLon, // starting position
                 zoom: this.zoomLevel // starting zoom
-            });
-            this.map.on('load', function () {
-               /* var myLayer = L.mapbox.featureLayer()
-                .loadURL('http://127.0.0.1:8080/gid.geojson')
-                .addTo(this);*/
-                
-                this.addSource("gid", {
-                    "type": "geojson",
-                    "data": "./gid.geojson"
-                });
-
-                this.addLayer({
-                    "id": "gid",
-                    "type": "symbol",
-                    "source": "gid",
-                    "layout": {
-                        "icon-image": "rocket-15"
-                    }
-                });
-
-            });       
+            });      
         },
 
         _updateMap: function() {
-            console.log('update');
+            console.log('UPDATE MAP');
             if (this.map) {
                 this.map.flyTo({
                    center: this.latLon
                 });
             }
+        },
+
+        _updateMapData: function() {
+            console.log(this.dataSets);
+            if (this.dataSets.length != 0) {
+                this.map.addSource("meters", {
+                    "type": "geojson",
+                    "data": "./parking_meters.geojson"
+                });
+
+                this.map.addLayer({
+                    "id": "meters",
+                    "type": "symbol",
+                    "source": "meters",
+                    "layout": {
+                        "icon-image": "rocket-15"
+                    }
+                });           
+            } 
         }
     });
 </script>

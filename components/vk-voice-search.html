@@ -55,6 +55,11 @@
                 value: "",
                 notify: true,
                 reflectToAttribute: true
+            },
+            dataSets: {
+                type: Array,
+                notify: true,
+                reflectToAttribute: true
             }
         },
 
@@ -65,6 +70,9 @@
         _handleResponse: function(request) {
            console.log(this.$.ajax.lastResponse);
            data = this.$.ajax.lastResponse;
+           if (data.result.action == 'load_dataset') {
+               this.dataSets = ['parking_meters'];
+           }
            if (data.result.parameters.location['zip-code']) {
              //geocoder.query(data.result.parameters.location['zip-code']);
              result = data.result.parameters.location['zip-code'];
@@ -78,6 +86,7 @@
              result = data.result.parameters.location['geo-city-us']
              console.log("geo-city-us " + result)
            }
+
            // TODO - this parsing needs to be better.
            console.log(result);
            this.geoSearchTerm = result;
