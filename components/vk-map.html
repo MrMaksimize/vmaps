@@ -9,6 +9,7 @@
             }
     </style>
     <link rel="import" href="../bower_components/polymer/polymer.html" />
+    <link rel="import" href="./vk-layer.html">
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v1.3.1/mapbox-gl-geocoder.css' type='text/css' />
     <template>
@@ -55,14 +56,25 @@
                 value: function(){
                     return 7;
                 }
+            },
+            map: {
+                type: Object,
+                notify: true,
+                reflectToAttribute: true,
             }
         },
 
         observers: [
             //TODO -- these three should be an object
             '_updateMap(latLon.*, zoomLevel)', 
-            '_updateMapData(dataSets.1)'
+            '_updateMapData(dataSets.*)'
         ],
+        ready: function() {
+            this.addEventListener('layerAdded', this.layerAdded);
+        },
+        layerAdded: function(e) {
+            console.log(e);
+        },
 
         attached: function() {
             mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
@@ -72,7 +84,9 @@
                 center: this.latLon, // starting position
                 zoom: this.zoomLevel // starting zoom
             });
-            this.map.layerList = [];     
+            this.map.layerList = [];
+            this.layerChildren = {};
+             
         },
 
         _updateMap: function(newVal, oldVal) {
@@ -88,55 +102,31 @@
         },
 
         _updateMapData: function() {
-            // TODO - subelement for layer management?
-            if (this.dataSets.length == 0 && this.map) {
-                console.log('Clearing Map');
-                for (var i = 0; i < this.map.layerList.length; i++) {
-                    var dataSet = this.map.layerList[i];
-                    this.map.setLayoutProperty(dataSet, 'visibility', 'none');
-                }
-            }
-            for (var i = 0; i < this.dataSets.length; i++) {
-                console.log(this.dataSets[i]);
-                var dataSet = this.dataSets[i];
-                if (this.map.layerList[dataSet]) {
-                    this.map.setLayoutProperty(dataSet, 'visibility', 'visible');
+            if (this.map) {
+                console.log('update');
+                if (this.dataSets.length == 0 && this.map) {
+                    for (var layer in this.layerChildren) {
+                        this.layerChildren[layer].set('visibility', 'none');
+                    }
                 }
                 else {
-                    //console.log(this.map.getLayers());
-                    // TODO - subelement for layer management?
-                    /*var dsType = 'symbol';
-                    switch (dataSet) {
-                        case 'council_districts':
-                            dsType = 'fill';
-                            break;
-                    }*/
-                    this.map.addSource(dataSet, {
-                        "type": "geojson",
-                        "data": "./" + dataSet + ".geojson"
-                    });
-                    /*var layerConfig = {
-                        "id": dataSet,
-                        "source": dataSet
-                    }*/
-                    this.map.addLayer({
-                        "id": dataSet,
-                        "type": "symbol",
-                        //"type": "fill",
-                        "source": dataSet,
-                        "layout": {
-                            "icon-image": "rocket-15"
-                            //https://github.com/mapbox/mapbox-gl-styles/tree/master/sprites/basic-v9/_svg
-                        }//,
-                        /*'paint': {
-                            'fill-color': '#088',
-                            'fill-opacity': 0.8,
-                            'fill-antialias': true,
-                            'fill-outline-color': '#000000'
-                        },*/
-                        //"filter": ["==", "$type", "Polygon"]
-                    });
-                    this.map.layerList.push(dataSet);
+                    console.log(this.dataSets[0]);
+                    for (var i = 0; i < this.dataSets.length; i++) {
+                        var dataSet = this.dataSets[i];
+                        console.log(dataSet);
+                        if (this.layerChildren[dataSet]) {
+                            this.layerChildren[dataSet].set('visibility', 'none');
+                        }
+                        else {
+                            var layerEl = document.createElement("vk-layer");
+                            // TODO -- idk if this is necessary.
+                            layerEl.setAttribute('map', "{{map}}");
+                            layerEl.setAttribute('data-set', dataSet);
+                            layerEl.set('map', this.map);
+                            this.appendChild(layerEl);
+                            this.layerChildren[dataSet] = layerEl;
+                        }
+                    }
                 }
             }
         }

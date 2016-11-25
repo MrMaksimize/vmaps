@@ -1,0 +1,81 @@
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.js'></script>
+<dom-module id="vk-layer">
+    <style>
+        
+    </style>
+    <link rel="import" href="../bower_components/polymer/polymer.html" />
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.26.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v1.3.1/mapbox-gl-geocoder.css' type='text/css' />
+    <template>
+        
+    </template>
+</dom-module>
+
+<script type="text/javascript">
+    Polymer({
+        is: 'vk-layer',
+        properties: {
+            /**
+            * latLon listen from the outside world for a new lat/lon pair (i.e.)
+            * a pair of coordinates) and update the map with the result.
+            *
+            * @property latLon
+            * @type Array
+            * @default [-74.50, 40]
+            */
+            dataSet: {
+                type: String,
+                value: ''
+            },
+            visibility: {
+                type: String,
+                value: 'visible',
+                observer: '_visibilityChanged'
+            },
+            map: {
+                type: Object,
+                value: function() {return {}},
+            }
+        },
+        attached: function() {
+            console.log('layer-attached');
+            console.log(this.dataSet);
+            console.log(this.map);
+            var dataSet = this.dataSet;
+            this.map.addSource(dataSet, {
+                "type": "geojson",
+                "data": "./" + dataSet + ".geojson"
+            });
+            this.map.addLayer({
+                "id": dataSet,
+                "type": "symbol",
+                //"type": "fill",
+                "source": dataSet,
+                "layout": {
+                    "icon-image": "rocket-15"
+                    //https://github.com/mapbox/mapbox-gl-styles/tree/master/sprites/basic-v9/_svg
+                }//,
+                /*'paint': {
+                    'fill-color': '#088',
+                    'fill-opacity': 0.8,
+                    'fill-antialias': true,
+                    'fill-outline-color': '#000000'
+                },*/
+                //"filter": ["==", "$type", "Polygon"]
+            });
+            this.map.layerList.push(dataSet);
+        },
+
+        detached: function() {
+            console.log('Detachment not implemented');
+        },
+        _visibilityChanged: function(newVal, oldVal) {
+            if (oldVal != undefined) {
+                this.map.setLayoutProperty(this.dataSet, 'visibility', newVal);
+            }
+        },
+        loadDataset: function(dataSet) {
+
+        }
+    });
+</script>
