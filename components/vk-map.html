@@ -84,15 +84,11 @@
                 center: this.latLon, // starting position
                 zoom: this.zoomLevel // starting zoom
             });
-            this.map.layerList = [];
             this.layerChildren = {};
              
         },
 
         _updateMap: function(newVal, oldVal) {
-            console.log('Update Map');
-            console.log(this.zoomLevel);
-            console.log(this.latLon);
             if (this.map) {
                 this.map.flyTo({
                    center: this.latLon,
@@ -111,11 +107,12 @@
                 }
                 else {
                     console.log(this.dataSets[0]);
+                    this.map.getLayer(this.dataSets[0]);
                     for (var i = 0; i < this.dataSets.length; i++) {
                         var dataSet = this.dataSets[i];
                         console.log(dataSet);
                         if (this.layerChildren[dataSet]) {
-                            this.layerChildren[dataSet].set('visibility', 'none');
+                            this.layerChildren[dataSet].set('visibility', 'visible');
                         }
                         else {
                             var layerEl = document.createElement("vk-layer");
