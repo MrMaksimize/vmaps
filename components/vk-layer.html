@@ -53,40 +53,68 @@
         getAllLayerConfigs: function () {
             var extendConfig = {
                 'parking_meters': {
-                    "type": "symbol",
-                    "layout": {
-                        "icon-image": "car-15"
-                        //https://github.com/mapbox/mapbox-gl-styles/tree/master/sprites/basic-v9/_svg
+                    src: {
+                        'data': './parking_meters.geojson',
+                        'type': 'geojson'
+                    },
+                    display: {
+                        "type": "symbol",
+                        "layout": {
+                            "icon-image": "car-15"
+                            //https://github.com/mapbox/mapbox-gl-styles/tree/master/sprites/basic-v9/_svg
+                        }
+                    }
+                },
+                'special_events': {
+                    src: {
+                        'data': 'https://cityofsandiego-admin.carto.com/api/v2/sql?format=GeoJSON&q=SELECT%20*%20FROM%20special_events_list_datasd%20where%20latitude%20is%20not%20null%20and%20longitude%20is%20not%20null',
+                        'type': 'geojson'
+                    },
+                    display: {
+                        "type": "symbol",
+                        "layout": {
+                            "icon-image": "rocket-15"
+                            //https://github.com/mapbox/mapbox-gl-styles/tree/master/sprites/basic-v9/_svg
+                        }
                     }
                 },
                 'council_districts': {
-                    "type": "fill",
-                    'paint': {
-                        'fill-color': '#088',
-                        'fill-opacity': 0.5,
-                        'fill-antialias': true,
-                        'fill-outline-color': '#000000'
+                    src: {
+                        'data': './council_districts.geojson',
+                        'type': 'geojson'
+                    },
+                    display: {
+                        "type": "fill",
+                        'paint': {
+                            'fill-color': '#088',
+                            'fill-opacity': 0.5,
+                            'fill-antialias': true,
+                            'fill-outline-color': '#000000'
+                        }
                     }
+                    
                 }
+                // "geojson_url": "https://cityofsandiego-admin.carto.com/api/v2/sql?format=GeoJSON&q=SELECT%20*%20FROM%20special_events_list_datasd%20where%20latitude%20is%20not%20null%20and%20longitude%20is%20not%20null",
             };
             return extendConfig;
         },
         getLayerConfig: function(dataSet) {
             var baseConfig = {
-                "id": dataSet,
-                "source": dataSet
+                src: {'type': 'geojson'},
+                display: {
+                    "id": dataSet,
+                    "source": dataSet
+                }
             };
             var extendConfig = this.getAllLayerConfigs();
-            config = _.extend(baseConfig, extendConfig[dataSet]);
+            config = _.merge(baseConfig, extendConfig[dataSet]);
+            console.log(config);
             return config;
         },
         loadDataSet: function(dataSet) {
             var config = this.getLayerConfig(dataSet);
-            this.map.addSource(dataSet, {
-                "type": "geojson",
-                "data": "./" + dataSet + ".geojson"
-            });
-            this.map.addLayer(config);
+            this.map.addSource(dataSet, config.src);
+            this.map.addLayer(config.display);
         }
     });
 </script>
