@@ -20,6 +20,7 @@
     "webcomponentsjs": "^0.7.23",
     "iron-icons": "^1.2.0",
     "iron-ajax": "^1.4.3",
-    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#^1.10.1"
+    "iron-overlay-behavior": "PolymerElements/iron-overlay-behavior#^1.10.1",
+    "lodash": "^4.17.2"
   }
 }
