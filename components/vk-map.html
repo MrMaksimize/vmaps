@@ -34,6 +34,15 @@
                     return [-117.16, 32.71]
                 },
             },
+            /*bounds: {
+                type: Array,
+                value: function(){
+                    return [
+                        [-117.309797, 32.534871]
+                        [-116.905723, 33.114185]
+                    ]
+                }
+            },*/
             dataSets: {
                 type: Array,
                 value: function(){
@@ -49,7 +58,11 @@
             }
         },
 
-        observers: ['_updateMap(latLon.0,latLon.1, zoomLevel)', '_updateMapData(dataSets.1)'],
+        observers: [
+            //TODO -- these three should be an object
+            '_updateMap(latLon.*, zoomLevel)', 
+            '_updateMapData(dataSets.1)'
+        ],
 
         attached: function() {
             mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
@@ -63,8 +76,9 @@
         },
 
         _updateMap: function(newVal, oldVal) {
+            console.log('Update Map');
             console.log(this.zoomLevel);
-            console.log('UPDATE MAP oldVal:' + oldVal + ' newVal:' + newVal);
+            console.log(this.latLon);
             if (this.map) {
                 this.map.flyTo({
                    center: this.latLon,

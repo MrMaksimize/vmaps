@@ -47,7 +47,7 @@
                 params = {
                     'api_key': "mapzen-rqEDCPe",
                     'text': newSearchterm,
-                    'size': 1,
+                    'size': 3,
                     'boundary.country': 'US'
                 }
                 this.$.geocoder.url = "http://search.mapzen.com/v1/search";
@@ -57,6 +57,7 @@
          },
         _handleResponse: function(request) {
            response = this.$.geocoder.lastResponse;
+           console.log(response);
            this.computedLatLon = response.features[0].geometry.coordinates;
         }
     });
