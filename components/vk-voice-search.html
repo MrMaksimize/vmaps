@@ -109,7 +109,7 @@
                 notify: true,
                 reflectToAttribute: true
             },
-            computedLatLon: {
+            latLon: {
                 type: Array,
                 notify: true,
                 reflectToAttribute: true
@@ -132,24 +132,27 @@
            }
 
            if (data.result.action == 'pan_map') {
-               var currentLatLon = this.computedLatLon;
-               console.log(currentLatLon)
-               /*if (data.result.parameters.zoom_action == 'to') {
-                   zoom = parseInt(data.result.parameters.zoom_number);
+               // lat = X
+               // lon = Y
+               x = this.latLon[0];
+               y = this.latLon[1];
+               var pan_amt = (parseInt(data.result.parameters.pan_number) || 1);
+               switch(data.result.parameters.pan_direction) {
+                   case 'up':
+                       y = y + pan_amt
+                       break;
+                   case 'down':
+                       y = y - pan_amt;
+                       break;
+                   case 'left':
+                       x = x - pan_amt;
+                       break;
+                   case 'right':
+                       x = x + pan_amt;
+                       break;
+                   
                }
-               else if (data.result.parameters.zoom_action == 'in') {
-                   zoom = zoom + (parseInt(data.result.parameters.zoom_number) || 1)
-               }
-               else if (data.result.parameters.zoom_action == 'out') {
-                   zoom = zoom - (parseInt(data.result.parameters.zoom_number) || 1)
-               }
-               else {
-                   // TODO fix this
-                   alert("I Don't Know What You Mean");
-               }*/
-
-               console.log('New Zoom: ' + zoom);
-               this.zoomLevel = zoom;
+               this.latLon = [x, y];
            }
 
            if (data.result.action == 'change_zoom') {

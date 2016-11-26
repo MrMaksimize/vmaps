@@ -47,15 +47,15 @@
         data-sets="{{dataSets}}"
         geo-search-term="{{geoSearchTerm}}"
         zoom-level={{zoomLevel}}
-        computed-lat-lon="{{latLon}}">
+        lat-lon="{{latLon}}">
     </vk-voice-search>
     <vk-geocoder 
         geo-search-term="{{geoSearchTerm}}" 
-        computed-lat-lon="{{computedLatLon}}">
+        lat-lon="{{latLon}}">
     </vk-geocoder>
     <!--$$('vk-map')[0].set('latLon', [-81, 20]) -->
     <vk-map 
-        lat-lon="[[computedLatLon]]" 
+        lat-lon="{{latLon}}" 
         data-sets="[[dataSets]]" 
         zoom-level="[[zoomLevel]]">
     </vk-map>
