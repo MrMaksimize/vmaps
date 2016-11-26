@@ -139,8 +139,8 @@
                x = this.latLon[0];
                y = this.latLon[1];
                var pan_amt = (parseInt(data.result.parameters.pan_number) || 1);
-               pan_amt = pan_amt * ((1 + (1 / this.zoomLevel)) / this.zoomLevel);
 
+               pan_amt = pan_amt * ((1 + (1 / this.zoomLevel)) / this.zoomLevel);
                console.log('z: ' + this.zoomLevel + ' p: ' + pan_amt);
                switch(data.result.parameters.pan_direction) {
                    case 'up':
@@ -181,7 +181,8 @@
                this.zoomLevel = zoom;
            }
            if (data.result.action == 'load_dataset') {
-               this.dataSets = data.result.parameters.dataset;
+               this.dataSets = _.union(this.dataSets, data.result.parameters.dataset);
+               console.log(this.dataSets);
            }
            if (data.result.parameters.location) {
                 if (data.result.parameters.location['zip-code']) {

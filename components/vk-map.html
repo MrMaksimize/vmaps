@@ -57,7 +57,10 @@
                 // can't figure out why i can't provide default here.
                 value: function(){
                     return 7;
-                }
+                },
+                notify: true,
+                reflectToAttribute: true
+
             },
             map: {
                 type: Object,
@@ -80,12 +83,17 @@
 
         attached: function() {
             mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
+            var self = this;
             this.map = new mapboxgl.Map({
                 container: 'map', // container id
                 style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
                 center: this.latLon, // starting position
                 zoom: this.zoomLevel // starting zoom
             });
+            // In theory this should never happen
+            /*this.map.on('zoomend', function() {
+                self.zoomLevel = this.getZoom()
+            })*/
             this.layerChildren = {};
              
         },
