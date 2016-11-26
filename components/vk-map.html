@@ -110,7 +110,6 @@
         _updateMapData: function() {
             if (this.map) {
                 console.log('update');
-                console.log(Polymer.dom(this).children);
                 if (this.dataSets.length == 0 && this.map) {
                     for (var layer in this.layerChildren) {
                         this.layerChildren[layer].set('visibility', 'none');
