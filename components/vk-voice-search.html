@@ -139,6 +139,9 @@
                x = this.latLon[0];
                y = this.latLon[1];
                var pan_amt = (parseInt(data.result.parameters.pan_number) || 1);
+               pan_amt = pan_amt * ((1 + (1 / this.zoomLevel)) / this.zoomLevel);
+
+               console.log('z: ' + this.zoomLevel + ' p: ' + pan_amt);
                switch(data.result.parameters.pan_direction) {
                    case 'up':
                        y = y + pan_amt
