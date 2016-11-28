@@ -1,0 +1,69 @@
+<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer.html" />
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="./vk-icon-toggle.html">
+<dom-module id="vk-map">
+    <style>
+        vk-icon-toggle#vs-voice-search {
+          top:45px;
+        }
+    </style>
+    <template>
+        <vk-icon-toggle 
+            toggle-icon="settings-voice" 
+            id="vs-voice-search" 
+            active={{listening}} 
+            onclick="start()">
+        </vk-icon-toggle>
+        <div class="one"></div>
+    </template>
+
+    <script type="text/javascript">
+        Polymer({
+            is: 'vk-voice-recognition',
+            properties: {
+                listening: {
+                    type: Boolean,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: false
+                },
+                resultText: {
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: ""
+                }
+            },
+
+            observers: [
+            ],
+            ready: function() {
+                console.log('ready');
+                console.log(annyang);
+            },
+            listeners: {
+                //'start': '_onStart'
+                //'abort': 'specialTap'
+            },
+            attached: function() {
+                if (annyang) {
+                    annyang.addCallback('result', this._onResult, this);
+                    
+                    //annyang.start({ autoRestart: false, continuous: false });
+                }
+                
+            },
+            start: function() {
+                annyang.start({ autoRestart: false, continuous: false });
+                this.listening = true;
+            },
+            _onResult: function(res) {
+                console.log(res[0]);
+                this.set('listening', false);
+                this.set('resultText', res[0]);
+            }
+        });
+
+    </script>
+</dom-module>

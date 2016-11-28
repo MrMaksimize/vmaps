@@ -8,11 +8,13 @@
             properties: {
                 continuous: {
                     type: Boolean,
-                    value: true
+                    value: false
                 },
                 text: {
                     type: String,
-                    value: ''
+                    value: '',
+                    notify: true,
+                    reflectToAttribute: true
                 }
             },
 
@@ -57,6 +59,7 @@
                     for (var i = e.resultIndex; i < e.results.length; ++i) {
                         that.text += e.results[i][0].transcript;
                         e.result = that.text;
+                        console.log(that.text);
                     }
 
                     that.fire('result', e);
@@ -65,12 +68,15 @@
 
             /* -- Public Methods -------------------------------------------- */
             start: function() {
+                console.log('start');
                 this.recognition.start();
             },
             stop: function() {
+                console.log('stop');
                 this.recognition.stop();
             },
             abort: function() {
+                console.log('abort');
                 this.recognition.abort();
             }
         });

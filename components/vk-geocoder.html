@@ -13,52 +13,52 @@
             method="GET",
         </iron-ajax>
     </template>
-</dom-module>
 
-<script type="text/javascript">
-    Polymer({
-        is: 'vk-geocoder',
-        properties: {
-            /**
-            * phrase broadcasts the current active phrase.
-            *
-            * @property phrase
-            * @type String
-            * @default ""
-            */
-            geoSearchTerm: {
-                type: String,
-                value: "",
-                observer: '_geoSearchTermChanged',
-                notify: true,
-                reflectToAttribute: true
+    <script type="text/javascript">
+        Polymer({
+            is: 'vk-geocoder',
+            properties: {
+                /**
+                * phrase broadcasts the current active phrase.
+                *
+                * @property phrase
+                * @type String
+                * @default ""
+                */
+                geoSearchTerm: {
+                    type: String,
+                    value: "",
+                    observer: '_geoSearchTermChanged',
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                latLon: {
+                    type: Array,
+                    notify: true,
+                    reflectToAttribute: true
+                },
             },
-            latLon: {
-                type: Array,
-                notify: true,
-                reflectToAttribute: true
-            },
-        },
 
-        ready: function() {
-        },
-        _geoSearchTermChanged: function(newSearchterm, oldSearchterm) {
-            if (newSearchterm) {
-                params = {
-                    'api_key': "mapzen-rqEDCPe",
-                    'text': newSearchterm,
-                    'size': 3,
-                    'boundary.country': 'US'
+            ready: function() {
+            },
+            _geoSearchTermChanged: function(newSearchterm, oldSearchterm) {
+                if (newSearchterm) {
+                    params = {
+                        'api_key': "mapzen-rqEDCPe",
+                        'text': newSearchterm,
+                        'size': 3,
+                        'boundary.country': 'US'
+                    }
+                    this.$.geocoder.url = "http://search.mapzen.com/v1/search";
+                    this.$.geocoder.params = params;
+                    this.$.geocoder.generateRequest();
                 }
-                this.$.geocoder.url = "http://search.mapzen.com/v1/search";
-                this.$.geocoder.params = params;
-                this.$.geocoder.generateRequest();
+            },
+            _handleResponse: function(request) {
+            response = this.$.geocoder.lastResponse;
+            console.log(response);
+            this.latLon= response.features[0].geometry.coordinates;
             }
-         },
-        _handleResponse: function(request) {
-           response = this.$.geocoder.lastResponse;
-           console.log(response);
-           this.latLon= response.features[0].geometry.coordinates;
-        }
-    });
-</script>
+        });
+    </script>
+</dom-module>

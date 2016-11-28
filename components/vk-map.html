@@ -15,127 +15,127 @@
     <template>
         <div id="map"></div>
     </template>
-</dom-module>
 
-<script type="text/javascript">
-    Polymer({
-        is: 'vk-map',
-        properties: {
-            /**
-            * latLon listen from the outside world for a new lat/lon pair (i.e.)
-            * a pair of coordinates) and update the map with the result.
-            *
-            * @property latLon
-            * @type Array
-            * @default [-74.50, 40]
-            */
-            latLon: {
-                type: Array,
-                value: function(){
-                    return [-117.16, 32.71]
+    <script type="text/javascript">
+        Polymer({
+            is: 'vk-map',
+            properties: {
+                /**
+                * latLon listen from the outside world for a new lat/lon pair (i.e.)
+                * a pair of coordinates) and update the map with the result.
+                *
+                * @property latLon
+                * @type Array
+                * @default [-74.50, 40]
+                */
+                latLon: {
+                    type: Array,
+                    value: function(){
+                        return [-117.16, 32.71]
+                    },
+                    notify: true,
+                    reflectToAttribute: true
                 },
-                notify: true,
-                reflectToAttribute: true
-            },
-            /*bounds: {
-                type: Array,
-                value: function(){
-                    return [
-                        [-117.309797, 32.534871]
-                        [-116.905723, 33.114185]
-                    ]
+                /*bounds: {
+                    type: Array,
+                    value: function(){
+                        return [
+                            [-117.309797, 32.534871]
+                            [-116.905723, 33.114185]
+                        ]
+                    }
+                },*/
+                dataSets: {
+                    type: Array,
+                    value: function(){
+                        return [];
+                    },
+                },
+                zoomLevel: {
+                    type: Number,
+                    // can't figure out why i can't provide default here.
+                    value: function(){
+                        return 7;
+                    },
+                    notify: true,
+                    reflectToAttribute: true
+
+                },
+                map: {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
                 }
-            },*/
-            dataSets: {
-                type: Array,
-                value: function(){
-                    return [];
-                },
             },
-            zoomLevel: {
-                type: Number,
-                // can't figure out why i can't provide default here.
-                value: function(){
-                    return 7;
-                },
-                notify: true,
-                reflectToAttribute: true
 
+            observers: [
+                //TODO -- these three should be an object
+                '_updateMap(latLon.*, zoomLevel)', 
+                '_updateMapData(dataSets.*)'
+            ],
+            ready: function() {
+                this.addEventListener('layerAdded', this.layerAdded);
             },
-            map: {
-                type: Object,
-                notify: true,
-                reflectToAttribute: true,
-            }
-        },
+            layerAdded: function(e) {
+                console.log(e);
+            },
 
-        observers: [
-            //TODO -- these three should be an object
-            '_updateMap(latLon.*, zoomLevel)', 
-            '_updateMapData(dataSets.*)'
-        ],
-        ready: function() {
-            this.addEventListener('layerAdded', this.layerAdded);
-        },
-        layerAdded: function(e) {
-            console.log(e);
-        },
-
-        attached: function() {
-            mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
-            var self = this;
-            this.map = new mapboxgl.Map({
-                container: 'map', // container id
-                style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
-                center: this.latLon, // starting position
-                zoom: this.zoomLevel // starting zoom
-            });
-            // In theory this should never happen
-            /*this.map.on('zoomend', function() {
-                self.zoomLevel = this.getZoom()
-            })*/
-            this.layerChildren = {};
-             
-        },
-
-        _updateMap: function(newVal, oldVal) {
-            if (this.map) {
-                this.map.flyTo({
-                   center: this.latLon,
-                   zoom: this.zoomLevel
+            attached: function() {
+                mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
+                var self = this;
+                this.map = new mapboxgl.Map({
+                    container: 'map', // container id
+                    style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+                    center: this.latLon, // starting position
+                    zoom: this.zoomLevel // starting zoom
                 });
-            }
-        },
+                // In theory this should never happen
+                /*this.map.on('zoomend', function() {
+                    self.zoomLevel = this.getZoom()
+                })*/
+                this.layerChildren = {};
+                
+            },
 
-        _updateMapData: function() {
-            if (this.map) {
-                console.log('update');
-                if (this.dataSets.length == 0 && this.map) {
-                    for (var layer in this.layerChildren) {
-                        this.layerChildren[layer].set('visibility', 'none');
-                    }
+            _updateMap: function(newVal, oldVal) {
+                if (this.map) {
+                    this.map.flyTo({
+                    center: this.latLon,
+                    zoom: this.zoomLevel
+                    });
                 }
-                else {
-                    console.log(this.dataSets[0]);
-                    this.map.getLayer(this.dataSets[0]);
-                    for (var i = 0; i < this.dataSets.length; i++) {
-                        var dataSet = this.dataSets[i];
-                        console.log(dataSet);
-                        if (this.layerChildren[dataSet]) {
-                            this.layerChildren[dataSet].set('visibility', 'visible');
+            },
+
+            _updateMapData: function() {
+                if (this.map) {
+                    console.log('update');
+                    if (this.dataSets.length == 0 && this.map) {
+                        for (var layer in this.layerChildren) {
+                            this.layerChildren[layer].set('visibility', 'none');
                         }
-                        else {
-                            var layerEl = document.createElement("vk-layer");
-                            // TODO -- idk if this is necessary.
-                            layerEl.setAttribute('map', "{{map}}");
-                            layerEl.setAttribute('data-set', dataSet);
-                            layerEl.set('map', this.map);
-                            this.appendChild(layerEl);
-                            this.layerChildren[dataSet] = layerEl;
+                    }
+                    else {
+                        console.log(this.dataSets[0]);
+                        this.map.getLayer(this.dataSets[0]);
+                        for (var i = 0; i < this.dataSets.length; i++) {
+                            var dataSet = this.dataSets[i];
+                            console.log(dataSet);
+                            if (this.layerChildren[dataSet]) {
+                                this.layerChildren[dataSet].set('visibility', 'visible');
+                            }
+                            else {
+                                var layerEl = document.createElement("vk-layer");
+                                // TODO -- idk if this is necessary.
+                                layerEl.setAttribute('map', "{{map}}");
+                                layerEl.setAttribute('data-set', dataSet);
+                                layerEl.set('map', this.map);
+                                this.appendChild(layerEl);
+                                this.layerChildren[dataSet] = layerEl;
+                            }
                         }
                     }
                 }
             }
-        }
-    });
-</script>
+        });
+    </script>
+</dom-module>
