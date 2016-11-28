@@ -59,7 +59,10 @@
             active={{active}} 
             onclick="plain.open()">
         </vk-icon-toggle>
-        <vk-voice-recognition id="recognizer"></vk-voice-recognition>
+        <vk-voice-recognition
+            phrase="{{phrase}}"
+            id="recognizer">
+        </vk-voice-recognition>
         <vk-simple-overlay id="plain" tabindex="-1">
             <h2>What can I say?</h2>
             <ul>

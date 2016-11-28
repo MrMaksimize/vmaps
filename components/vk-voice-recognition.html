@@ -2,10 +2,12 @@
 <link rel="import" href="../bower_components/polymer/polymer.html" />
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="./vk-icon-toggle.html">
-<dom-module id="vk-map">
+<dom-module id="vk-voice-recognition">
     <style>
         vk-icon-toggle#vs-voice-search {
           top:45px;
+          right: 10px;
+          position: absolute;
         }
     </style>
     <template>
@@ -13,9 +15,8 @@
             toggle-icon="settings-voice" 
             id="vs-voice-search" 
             active={{listening}} 
-            onclick="start()">
+            on-click="start">
         </vk-icon-toggle>
-        <div class="one"></div>
     </template>
 
     <script type="text/javascript">
@@ -28,7 +29,7 @@
                     reflectToAttribute: true,
                     value: false
                 },
-                resultText: {
+                phrase: {
                     type: String,
                     notify: true,
                     reflectToAttribute: true,
@@ -61,7 +62,7 @@
             _onResult: function(res) {
                 console.log(res[0]);
                 this.set('listening', false);
-                this.set('resultText', res[0]);
+                this.set('phrase', res[0]);
             }
         });
 
