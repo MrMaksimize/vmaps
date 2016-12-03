@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../bower_components/voice-elements/dist/voice-player.html">
 <link rel="import" href="./vk-voice-recognition.html">
 <link rel="import" href="./vk-icon-toggle.html">
 <link rel="import" href="./vk-simple-overlay.html">
@@ -63,6 +64,7 @@
             phrase="{{phrase}}"
             id="recognizer">
         </vk-voice-recognition>
+        <voice-player id="speaker" text="[[responsePhrase]]"></voice-player>
         <vk-simple-overlay id="plain" tabindex="-1">
             <h2>What can I say?</h2>
             <ul>
@@ -105,6 +107,11 @@
                     type: String,
                     value: "Say something...",
                     observer: '_phraseChanged'
+                },
+                responsePhrase: {
+                    type: String,
+                    value: "",
+                    observer: '_responsePhraseChanged'
                 },
                 geoSearchTerm: {
                     type: String,
@@ -231,7 +238,10 @@
                     console.log(this.$.ajax)
                     this.$.ajax.generateRequest();
                 }
-        }
+            },
+            _responsePhraseChanged: function(newPhrase, oldPhrase) {
+                console.log(newPhrase);
+            }
         });
     </script>
 </dom-module>
