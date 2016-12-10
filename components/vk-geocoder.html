@@ -47,7 +47,13 @@
                         'api_key': "mapzen-rqEDCPe",
                         'text': newSearchterm,
                         'size': 3,
-                        'boundary.country': 'US'
+                        'boundary.country': 'US',
+                        'boundary.rect.min_lat': 32.52713149992711,
+                        'boundary.rect.min_lon': -117.34359741210939,
+                        'boundary.rect.max_lat': 32.931470839102154,
+                        'boundary.rect.max_lon': -116.76544189453124,
+                        'focus.point.lat': 32.7157,
+                        'focus.point.lon': -117.1611
                     }
                     this.$.geocoder.url = "http://search.mapzen.com/v1/search";
                     this.$.geocoder.params = params;
@@ -55,9 +61,9 @@
                 }
             },
             _handleResponse: function(request) {
-            response = this.$.geocoder.lastResponse;
-            console.log(response);
-            this.latLon= response.features[0].geometry.coordinates;
+                response = this.$.geocoder.lastResponse;
+                console.log(response);
+                this.latLon= response.features[0].geometry.coordinates;
             }
         });
     </script>

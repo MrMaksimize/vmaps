@@ -64,6 +64,19 @@
                             }
                         }
                     },
+                    'get_it_done': {
+                        src: {
+                            'data': 'https://cityofsandiego-admin.carto.com/api/v2/sql?format=GeoJSON&q=SELECT%20*%20FROM%20get_it_done_311_requests_datasd%20where%20lat%20is%20not%20null%20and%20lng%20is%20not%20null',
+                            'type': 'geojson'
+                        },
+                        display: {
+                            "type": "symbol",
+                            "layout": {
+                                "icon-image": "beer-11"
+                                //https://github.com/mapbox/mapbox-gl-styles/tree/master/sprites/basic-v9/_svg
+                            }
+                        }
+                    },
                     'special_events': {
                         src: {
                             'data': 'https://cityofsandiego-admin.carto.com/api/v2/sql?format=GeoJSON&q=SELECT%20*%20FROM%20special_events_list_datasd%20where%20latitude%20is%20not%20null%20and%20longitude%20is%20not%20null',
