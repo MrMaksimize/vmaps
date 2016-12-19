@@ -42,21 +42,21 @@
 
 <body>
     <template is="dom-bind">
-    <vk-voice-search active={{active}} 
-        phrase="{{phrase}}" 
+    <vk-voice-search active={{active}}
+        phrase="{{phrase}}"
         data-sets="{{dataSets}}"
         geo-search-term="{{geoSearchTerm}}"
         zoom-level={{zoomLevel}}
         lat-lon="{{latLon}}">
     </vk-voice-search>
-    <vk-geocoder 
-        geo-search-term="{{geoSearchTerm}}" 
+    <vk-geocoder
+        geo-search-term="{{geoSearchTerm}}"
         lat-lon="{{latLon}}">
     </vk-geocoder>
     <!--$$('vk-map')[0].set('latLon', [-81, 20]) -->
-    <vk-map 
-        lat-lon="{{latLon}}" 
-        data-sets="[[dataSets]]" 
+    <vk-map
+        lat-lon="{{latLon}}"
+        data-sets="[[dataSets]]"
         zoom-level="{{zoomLevel}}">
     </vk-map>
     <!--<vk-geocoder place-data="{{placeData}}" lat-lon="{{latLon}}"></vk-geocoder>
