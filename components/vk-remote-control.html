@@ -1,0 +1,79 @@
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>-->
+<link rel="import" href="../bower_components/polymer/polymer.html" />
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="./vk-icon-toggle.html">
+<link rel="import" href="./vk-simple-overlay.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
+<dom-module id="vk-remote-control">
+    <script type="text/javascript">
+        Polymer({
+            is: 'vk-remote-control',
+            properties: {
+                active: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
+                dataSets: {
+                    type: Array,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                zoomLevel: {
+                    type: Number,
+                    value: 7,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                latLon: {
+                    type: Array,
+                    notify: true,
+                    reflectToAttribute: true
+                }
+
+            },
+
+            attached: function() {
+                console.log('ready');
+                var socket = io('http://localhost:3000');
+                console.log(socket);
+                var self = this;
+                //this.$['voice-search'].textContent = this.phrase;
+                socket.on('connect', function(){
+                    console.log('connected');
+                    socket.on('update_map', function(data){
+                        self.handleSocketMsg(data)
+                    });
+                });
+            },
+            handleSocketMsg: function(data) {
+                console.log(data);
+                if (data.latLon) {
+                    //socket.emit('control_signal', {latLon: [-100, 33]});
+                    this.latLon = data.latLon;
+                }
+                if (this.zoomLevel) {
+                    this.zoomLevel = data.zoomLevel
+                }
+            },
+            _phraseChanged: function(newPhrase, oldPhrase) {
+                console.log(newPhrase);
+                console.log(oldPhrase);
+                if (oldPhrase) {
+                    this.$.ajax.body = JSON.stringify({
+                                q: newPhrase,
+                                lang: "en",
+                                sessionId: "polymap-1"
+                            });
+                    console.log(this.$.ajax)
+                    this.$.ajax.generateRequest();
+                }
+            },
+            _responsePhraseChanged: function(newPhrase, oldPhrase) {
+                console.log(newPhrase);
+            }
+        });
+    </script>
+</dom-module>

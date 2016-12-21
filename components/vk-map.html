@@ -70,7 +70,7 @@
 
             observers: [
                 //TODO -- these three should be an object
-                '_updateMap(latLon.*, zoomLevel)', 
+                '_updateMap(latLon.*, zoomLevel)',
                 '_updateMapData(dataSets.*)'
             ],
             ready: function() {
@@ -81,6 +81,7 @@
             },
 
             attached: function() {
+                console.log('map ready');
                 mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
                 var self = this;
                 this.map = new mapboxgl.Map({
@@ -94,10 +95,11 @@
                     self.zoomLevel = this.getZoom()
                 })*/
                 this.layerChildren = {};
-                
+
             },
 
             _updateMap: function(newVal, oldVal) {
+                console.log(newVal);
                 if (this.map) {
                     this.map.flyTo({
                         center: this.latLon,
