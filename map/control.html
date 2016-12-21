@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+  </head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+  var socket = io('http://localhost:3000');
+  console.log(socket);
+  /*for(count = 0; count < 1000; count++){
+      setTimeout(function(){
+        console.log('emit ' + count);
+        socket.emit('control_signal', {'signal': 's1'});
+      }, 3000);
+  }*/
+
+  /*$('form').submit(function(e){
+    socket.emit('chat', $('#m').val());
+    $('#m').val('');
+    e.preventDefault()
+    e.stopPropagation()
+    return false;
+
+  });*/
+</script>
+  <body>
+
+  </body>
+</html>
