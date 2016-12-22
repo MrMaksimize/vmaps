@@ -43,18 +43,18 @@
 
 <body>
     <template is="dom-bind">
-    <vk-voice-search active={{active}}
+    <!--<vk-voice-search active={{active}}
         phrase="{{phrase}}"
         data-sets="{{dataSets}}"
         geo-search-term="{{geoSearchTerm}}"
         zoom-level={{zoomLevel}}
         lat-lon="{{latLon}}">
-    </vk-voice-search>
+    </vk-voice-search>-->
     <vk-remote-control active={{active}}
         data-sets="{{dataSets}}"
         zoom-level={{zoomLevel}}
         lat-lon="{{latLon}}"
-        mode="receive">
+        mode="emit">
     </vk-remote-control>
     <vk-geocoder
         geo-search-term="{{geoSearchTerm}}"

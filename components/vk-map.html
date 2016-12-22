@@ -34,7 +34,7 @@
                         return [-117.16, 32.71]
                     },
                     notify: true,
-                    reflectToAttribute: true
+                    reflectToAttribute: true,
                 },
                 /*bounds: {
                     type: Array,
@@ -70,9 +70,17 @@
 
             observers: [
                 //TODO -- these three should be an object
-                '_updateMap(latLon.*, zoomLevel)',
+                '_handleLatLonChanged(latLon.*)',
+                // '_updateMap(latLon.*, zoomLevel)',
                 '_updateMapData(dataSets.*)'
             ],
+
+            _handleLatLonChanged: function() {
+                this.debounce('latLonChanged', function() {
+                    this._updateMap();
+                })
+            },
+
             ready: function() {
                 this.addEventListener('layerAdded', this.layerAdded);
             },
@@ -90,6 +98,11 @@
                     center: this.latLon, // starting position
                     zoom: this.zoomLevel // starting zoom
                 });
+                this.map.on('moveend', function(){
+                    this._handleMapMoveEnd();
+                    // center = self.map.getCenter()
+                    // self.latLon = [center.lng, center.lat]
+                }.bind(self))
                 // In theory this should never happen
                 /*this.map.on('zoomend', function() {
                     self.zoomLevel = this.getZoom()
@@ -98,13 +111,46 @@
 
             },
 
-            _updateMap: function(newVal, oldVal) {
-                console.log(newVal);
+            // listeners : [ 'map.moveend' : '_handleFormSubmit' ]
+
+            _handleMapMoveEnd: function() {
                 if (this.map) {
+                    this.debounce('handleMapMoveEnd', function(){
+                        var mapCenter = this.map.getCenter();
+                        if (mapCenter.lat && mapCenter.lng && (typeof mapCenter.lat === "number") && (typeof mapCenter.lng === "number")) {
+                            this.set('latLon', [mapCenter.lng, mapCenter.lat]);
+                        }
+                    }, 100);
+                }
+            },
+
+            _updateMap: function() {
+                // If this.latLon is different from map, sync map
+                // If this.zoomLevel is different from map, sync map
+                if (this.map) {
+                    var center = this.map.getCenter();
+                    var mapLat = center.lat;
+                    var mapLon = center.lng;
+                    var modelLat = this.latLon[1];
+                    var modelLon = this.latLon[0];
+
+                    if ((mapLat !== modelLat) || (mapLon !== modelLon)) {
+                        this._redrawMap();
+                    }
+                }
+            },
+
+            _redrawMap: function() {
+                if (this.map && this.latLon) {
+
+                    debugger;
+                    console.log('update map');
+                    console.log(this.latLon);
                     this.map.flyTo({
                         center: this.latLon,
                         zoom: this.zoomLevel
                     });
+
                 }
             },
 
