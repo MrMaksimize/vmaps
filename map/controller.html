@@ -48,25 +48,25 @@
         data-sets="{{dataSets}}"
         geo-search-term="{{geoSearchTerm}}"
         zoom-level={{zoomLevel}}
-        lat-lon="{{latLon}}">
+        lon-lat="{{lonLat}}">
     </vk-voice-search>-->
     <vk-remote-control active={{active}}
         data-sets="{{dataSets}}"
         zoom-level={{zoomLevel}}
-        lat-lon="{{latLon}}"
+        lon-lat="{{lonLat}}"
         mode="emit">
     </vk-remote-control>
     <vk-geocoder
         geo-search-term="{{geoSearchTerm}}"
-        lat-lon="{{latLon}}">
+        lon-lat="{{lonLat}}">
     </vk-geocoder>
-    <!--$$('vk-map')[0].set('latLon', [-81, 20]) -->
+    <!--$$('vk-map')[0].set('lonLat', [-81, 20]) -->
     <vk-map
-        lat-lon="{{latLon}}"
+        lon-lat="{{lonLat}}"
         data-sets="[[dataSets]]"
         zoom-level="{{zoomLevel}}">
     </vk-map>
-    <!--<vk-geocoder place-data="{{placeData}}" lat-lon="{{latLon}}"></vk-geocoder>
+    <!--<vk-geocoder place-data="{{placeData}}" lon-lat="{{lonLat}}"></vk-geocoder>
     <vk-api access-token="" base-url="" phrase="[[phrase]]" response="{{placeData}}">
     </vk-api> -->
     </template>
