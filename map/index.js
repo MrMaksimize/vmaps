@@ -13,7 +13,7 @@ app.get('/fmap', function(req, res){
 
 io.on('connection', function(socket){
   console.log('socket_on');
-  socket.on('control_signal', function(data){
+  socket.on('update_map', function(data){
     console.log(data);
     socket.broadcast.emit('update_map', data)
   });

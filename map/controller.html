@@ -53,8 +53,7 @@
     <vk-remote-control active={{active}}
         data-sets="{{dataSets}}"
         zoom-level={{zoomLevel}}
-        lon-lat="{{lonLat}}"
-        mode="emit">
+        lon-lat="{{lonLat}}">
     </vk-remote-control>
     <vk-geocoder
         geo-search-term="{{geoSearchTerm}}"
@@ -71,7 +70,16 @@
     </vk-api> -->
     </template>
 
+    <script>
+        window.addEventListener('WebComponentsReady', function(){
+            var template = document.querySelector('template');
 
+            document.addEventListener('vk-map-moved', function(evt){
+                debugger;
+                console.log(evt);
+            });
+        });
+    </script>
 
     <script src='http://mrm-screen.s3.amazonaws.com/api.ai.min.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.2/lodash.min.js"></script>
