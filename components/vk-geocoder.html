@@ -32,7 +32,7 @@
                     notify: true,
                     reflectToAttribute: true
                 },
-                latLon: {
+                lonLat: {
                     type: Array,
                     notify: true,
                     reflectToAttribute: true
@@ -63,7 +63,7 @@
             _handleResponse: function(request) {
                 response = this.$.geocoder.lastResponse;
                 console.log(response);
-                this.latLon= response.features[0].geometry.coordinates;
+                this.lonLat = response.features[0].geometry.coordinates;
             }
         });
     </script>

@@ -21,14 +21,14 @@
             is: 'vk-map',
             properties: {
                 /**
-                * latLon listen from the outside world for a new lat/lon pair (i.e.)
+                * lonLat listen from the outside world for a new lat/lon pair (i.e.)
                 * a pair of coordinates) and update the map with the result.
                 *
-                * @property latLon
+                * @property lonLat
                 * @type Array
                 * @default [-74.50, 40]
                 */
-                latLon: {
+                lonLat: {
                     type: Array,
                     value: function(){
                         return [-117.16, 32.71]
@@ -70,13 +70,12 @@
 
             observers: [
                 //TODO -- these three should be an object
-                '_handleLatLonChanged(latLon.*)',
-                // '_updateMap(latLon.*, zoomLevel)',
+                '_handlelonLatChanged(lonLat.*)',
+                // '_updateMap(lonLat.*, zoomLevel)',
                 '_updateMapData(dataSets.*)'
             ],
-
-            _handleLatLonChanged: function() {
-                this.debounce('latLonChanged', function() {
+            _handlelonLatChanged: function() {
+                this.debounce('lonLatChanged', function() {
                     this._updateMap();
                 })
             },
@@ -95,13 +94,13 @@
                 this.map = new mapboxgl.Map({
                     container: 'map', // container id
                     style: 'mapbox://styles/mapbox/dark-v9', //stylesheet location
-                    center: this.latLon, // starting position
+                    center: this.lonLat, // starting position
                     zoom: this.zoomLevel // starting zoom
                 });
-                this.map.on('moveend', function(){
-                    this._handleMapMoveEnd();
+                this.map.on('move', function(){
+                    this._handleMapMove();
                     // center = self.map.getCenter()
-                    // self.latLon = [center.lng, center.lat]
+                    // self.lonLat = [center.lng, center.lat]
                 }.bind(self))
                 // In theory this should never happen
                 /*this.map.on('zoomend', function() {
@@ -113,26 +112,27 @@
 
             // listeners : [ 'map.moveend' : '_handleFormSubmit' ]
 
-            _handleMapMoveEnd: function() {
+            _handleMapMove: function() {
                 if (this.map) {
-                    this.debounce('handleMapMoveEnd', function(){
+                    this.debounce('handleMapMove', function(){
                         var mapCenter = this.map.getCenter();
                         if (mapCenter.lat && mapCenter.lng && (typeof mapCenter.lat === "number") && (typeof mapCenter.lng === "number")) {
-                            this.set('latLon', [mapCenter.lng, mapCenter.lat]);
+                            this.set('lonLat', [mapCenter.lng, mapCenter.lat]);
                         }
                     }, 100);
                 }
             },
 
             _updateMap: function() {
-                // If this.latLon is different from map, sync map
+                // If this.lonLat is different from map, sync map
                 // If this.zoomLevel is different from map, sync map
                 if (this.map) {
+                    console.log('update map called');
                     var center = this.map.getCenter();
                     var mapLat = center.lat;
                     var mapLon = center.lng;
-                    var modelLat = this.latLon[1];
-                    var modelLon = this.latLon[0];
+                    var modelLat = this.lonLat[1];
+                    var modelLon = this.lonLat[0];
 
                     if ((mapLat !== modelLat) || (mapLon !== modelLon)) {
                         this._redrawMap();
@@ -141,13 +141,13 @@
             },
 
             _redrawMap: function() {
-                if (this.map && this.latLon) {
+                if (this.map && this.lonLat) {
 
                     debugger;
                     console.log('update map');
-                    console.log(this.latLon);
+                    console.log(this.lonLat);
                     this.map.flyTo({
-                        center: this.latLon,
+                        center: this.lonLat,
                         zoom: this.zoomLevel
                     });
 

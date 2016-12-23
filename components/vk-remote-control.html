@@ -27,7 +27,7 @@
                     notify: true,
                     reflectToAttribute: true
                 },
-                latLon: {
+                lonLat: {
                     type: Array,
                     notify: true,
                     reflectToAttribute: true
@@ -38,7 +38,7 @@
             },
             observers: [
                 //TODO -- these three should be an object
-                '_emit(latLon.*, zoomLevel)'//,
+                '_emit(lonLat.*, zoomLevel)'//,
                 //'_updateMapData(dataSets.*)'
             ],
 
@@ -57,11 +57,11 @@
                 });
             },
             handleSocketMsg: function(data) {
-                console.log(data.latLon);
-                if (data.latLon && typeof data.latLon[0] === "number") {
-                    //socket.emit('control_signal', {latLon: [-100, 33]});
+                console.log(data.lonLat);
+                if (data.lonLat && typeof data.lonLat[0] === "number") {
+                    //socket.emit('control_signal', {lonLat: [-100, 33]});
 
-                    this.latLon = data.latLon;
+                    this.lonLat = data.lonLat;
                 }
                 if (this.zoomLevel) {
                     this.zoomLevel = data.zoomLevel
@@ -75,10 +75,10 @@
                     if (this.mode == 'emit' && this.socket) {
                         console.log(this.socket);
                         console.log('emit control');
-                        //ll = [self.latLon[1], self.latLon[0]]
-                        self.socket.emit('control_signal', {latLon: self.latLon});
+                        //ll = [self.lonLat[1], self.lonLat[0]]
+                        self.socket.emit('control_signal', {lonLat: self.lonLat});
                     }
-                    console.log(this.latLon);
+                    console.log(this.lonLat);
                     console.log(this.zoomLevel);
                 }, 500);
             },
