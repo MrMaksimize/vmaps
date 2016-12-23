@@ -28,58 +28,43 @@
                 * @type Array
                 * @default [-74.50, 40]
                 */
-                lonLat: {
-                    type: Array,
+                // Downward data flow
+                mapConfig: {
+                    type: Object,
                     value: function(){
-                        return [-117.16, 32.71]
+                        return {
+                            lonLat:[-117.16, 32.71],
+                            zoom: 7
+                        };
+                    },
+                    notify: false,
+                    reflectToAttribute: true,
+                    readOnly: false
+                },
+                currentMapState: {
+                    type: Object,
+                    value: function(){
+                       return {
+                            lonLat:[-117.16, 32.71],
+                            zoom: 7
+                        };
                     },
                     notify: true,
                     reflectToAttribute: true,
+                    readOnly: true
                 },
-                /*bounds: {
-                    type: Array,
-                    value: function(){
-                        return [
-                            [-117.309797, 32.534871]
-                            [-116.905723, 33.114185]
-                        ]
-                    }
-                },*/
                 dataSets: {
                     type: Array,
                     value: function(){
                         return [];
                     },
                 },
-                zoomLevel: {
-                    type: Number,
-                    // can't figure out why i can't provide default here.
-                    value: function(){
-                        return 7;
-                    },
-                    notify: true,
-                    reflectToAttribute: true
-
-                },
-                map: {
-                    type: Object,
-                    notify: true,
-                    reflectToAttribute: true,
-                }
             },
 
             observers: [
                 //TODO -- these three should be an object
-                '_handlelonLatChanged(lonLat.*)',
-                // '_updateMap(lonLat.*, zoomLevel)',
-                '_updateMapData(dataSets.*)'
+                '_handleMapConfigChange(mapConfig.*)'
             ],
-            _handlelonLatChanged: function() {
-                this.debounce('lonLatChanged', function() {
-                    this._updateMap();
-                })
-            },
-
             ready: function() {
                 this.addEventListener('layerAdded', this.layerAdded);
             },
@@ -94,66 +79,29 @@
                 this.map = new mapboxgl.Map({
                     container: 'map', // container id
                     style: 'mapbox://styles/mapbox/dark-v9', //stylesheet location
-                    center: this.lonLat, // starting position
-                    zoom: this.zoomLevel // starting zoom
+                    center: this.mapConfig.lonLat, // starting position
+                    zoom: this.mapConfig.zoom // starting zoom
                 });
-                this.map.on('move', function(){
-                    this._handleMapMove();
-                    // center = self.map.getCenter()
-                    // self.lonLat = [center.lng, center.lat]
-                }.bind(self))
-                // In theory this should never happen
-                /*this.map.on('zoomend', function() {
-                    self.zoomLevel = this.getZoom()
-                })*/
                 this.layerChildren = {};
 
+                this.map.on('')
+
             },
-
-            // listeners : [ 'map.moveend' : '_handleFormSubmit' ]
-
-            _handleMapMove: function() {
-                if (this.map) {
-                    this.debounce('handleMapMove', function(){
-                        var mapCenter = this.map.getCenter();
-                        if (mapCenter.lat && mapCenter.lng && (typeof mapCenter.lat === "number") && (typeof mapCenter.lng === "number")) {
-                            this.set('lonLat', [mapCenter.lng, mapCenter.lat]);
-                        }
-                    }, 100);
-                }
+           _handleMapConfigChange: function() {
+                console.log('Map config changed.')
+                console.log(this.mapConfig);
+                this._redrawMap();
             },
-
-            _updateMap: function() {
-                // If this.lonLat is different from map, sync map
-                // If this.zoomLevel is different from map, sync map
-                if (this.map) {
-                    console.log('update map called');
-                    var center = this.map.getCenter();
-                    var mapLat = center.lat;
-                    var mapLon = center.lng;
-                    var modelLat = this.lonLat[1];
-                    var modelLon = this.lonLat[0];
-
-                    if ((mapLat !== modelLat) || (mapLon !== modelLon)) {
-                        this._redrawMap();
-                    }
-                }
-            },
-
             _redrawMap: function() {
-                if (this.map && this.lonLat) {
-
-                    debugger;
-                    console.log('update map');
-                    console.log(this.lonLat);
-                    this.map.flyTo({
-                        center: this.lonLat,
-                        zoom: this.zoomLevel
+                console.log('redraw map');
+                if (this.map && this.mapConfig) {
+                    console.log('redraw map exec');
+                    this.map.easeTo({
+                        center: this.mapConfig.lonLat,
+                        zoom: this.mapConfig.zoom
                     });
-
                 }
             },
-
             _updateMapData: function() {
                 if (this.map) {
                     console.log('update');

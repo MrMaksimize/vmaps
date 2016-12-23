@@ -10,6 +10,7 @@
     <link rel="import" href="../components/vk-voice-search.html">
     <link rel="import" href="../components/vk-geocoder.html">
     <link rel="import" href="../components/vk-remote-control.html">
+    <link rel="import" href="../components/vk-map-controller.html">
     <title></title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <style>
@@ -43,35 +44,43 @@
 
 <body>
     <template is="dom-bind">
-    <!--<vk-voice-search active={{active}}
-        phrase="{{phrase}}"
-        data-sets="{{dataSets}}"
-        geo-search-term="{{geoSearchTerm}}"
-        zoom-level={{zoomLevel}}
-        lon-lat="{{lonLat}}">
-    </vk-voice-search>-->
-    <vk-remote-control active={{active}}
-        data-sets="{{dataSets}}"
-        zoom-level={{zoomLevel}}
-        lon-lat="{{lonLat}}"
-        mode="emit">
-    </vk-remote-control>
-    <vk-geocoder
-        geo-search-term="{{geoSearchTerm}}"
-        lon-lat="{{lonLat}}">
-    </vk-geocoder>
-    <!--$$('vk-map')[0].set('lonLat', [-81, 20]) -->
-    <vk-map
-        lon-lat="{{lonLat}}"
-        data-sets="[[dataSets]]"
-        zoom-level="{{zoomLevel}}">
-    </vk-map>
-    <!--<vk-geocoder place-data="{{placeData}}" lon-lat="{{lonLat}}"></vk-geocoder>
-    <vk-api access-token="" base-url="" phrase="[[phrase]]" response="{{placeData}}">
-    </vk-api> -->
+        <vk-map-controller
+            map-config-out={{mapConfigOut}}>
+            <!--<vk-voice-search active={{active}}
+                phrase="{{phrase}}"
+                data-sets="{{dataSets}}"
+                geo-search-term="{{geoSearchTerm}}"
+                zoom-level={{zoomLevel}}
+                lon-lat="{{lonLat}}">
+            </vk-voice-search>-->
+            <vk-remote-control
+                map-config=[[mapConfigOut]]>
+            </vk-remote-control>
+            <!--<vk-geocoder
+                geo-search-term="{{geoSearchTerm}}"
+                lon-lat="{{lonLat}}">
+            </vk-geocoder>-->
+            <!--$$('vk-map')[0].set('lonLat', [-81, 20]) -->
+            <vk-map
+                map-config=[[mapConfigOut]]>
+            </vk-map>
+            <!--<vk-geocoder place-data="{{placeData}}" lon-lat="{{lonLat}}"></vk-geocoder>
+            <vk-api access-token="" base-url="" phrase="[[phrase]]" response="{{placeData}}">
+            </vk-api> -->
+        </vk-map-controller>
+
     </template>
 
+    <script>
+        window.addEventListener('WebComponentsReady', function(){
+            var template = document.querySelector('template');
 
+            document.addEventListener('vk-map-moved', function(evt){
+                debugger;
+                console.log(evt);
+            });
+        });
+    </script>
 
     <script src='http://mrm-screen.s3.amazonaws.com/api.ai.min.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.2/lodash.min.js"></script>

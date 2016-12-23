@@ -11,92 +11,75 @@
         Polymer({
             is: 'vk-remote-control',
             properties: {
-                active: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
                 dataSets: {
                     type: Array,
                     notify: true,
                     reflectToAttribute: true
                 },
-                zoomLevel: {
-                    type: Number,
-                    value: 7,
-                    notify: true,
-                    reflectToAttribute: true
-                },
-                lonLat: {
-                    type: Array,
-                    notify: true,
-                    reflectToAttribute: true
-                },
-                mode: {
-                    type: String
+                // Downward flow
+                mapConfig: {
+                    type: Object,
+                    value: function(){
+                        return {
+                            lonLat:[-117.16, 32.71],
+                            zoom: 7
+                        };
+                    },
+                    notify: false,
+                    reflectToAttribute: true,
+                    readOnly: false
                 }
             },
             observers: [
                 //TODO -- these three should be an object
-                '_emit(lonLat.*, zoomLevel)'//,
                 //'_updateMapData(dataSets.*)'
+                '_handleMapConfigChanged(mapConfig*)'
             ],
+            //listeners: {
+            //    'vk-map-moved': '_emit'
+            //},
+            _handleMapConfigChanged: function() {
+                console.log('rc mapconfig change')
+            },
 
             attached: function() {
                 console.log('ready');
-                this.socket = io('http://localhost:3000');
+                /*this.socket = io('http://localhost:3000');
+                //this.socket = io('http://fc1e08a4.ngrok.io');
                 var self = this;
                 console.log(this.socket);
                 this.socket.on('connect', function(){
                     console.log('connected');
-                    if (self.mode == 'receive') {
-                        self.socket.on('update_map', function(data){
-                            self.handleSocketMsg(data)
-                        });
-                    }
-                });
+                    self.socket.on('update_map', function(data){
+                      self.handleSocketMsg(data)
+                    });
+                });*/
             },
             handleSocketMsg: function(data) {
-                console.log(data.lonLat);
-                if (data.lonLat && typeof data.lonLat[0] === "number") {
-                    //socket.emit('control_signal', {lonLat: [-100, 33]});
-
-                    this.lonLat = data.lonLat;
-                }
-                if (this.zoomLevel) {
-                    this.zoomLevel = data.zoomLevel
-                }
+                this._data = data;
+                this.debounce('receive', function() {
+                    console.log(this._data.lonLat);
+                    if ((this._data.lonLat && typeof this._data.lonLat[0] === "number" && typeof this._data.lonLat[1] === "number" && this.lonLat) &&
+                        (this._data.lonLat[0] !== this.lonLat[0] || this._data.lonLat[1] !== this.lonLat[1])) {
+                        this.set('lonLat', this._data.lonLat);
+                    }
+                    debugger
+                    if (this._data.zoomLevel && typeof this._data.zoomLevel == "number" && this.zoomLevel && this.zoomLevel != this._data.zoomLevel) {
+                        this.set('zoomLevel', this._data.zoomLevel);
+                    }
+                }, 500);
             },
-            _emit: function(newVal, oldVal) {
+            _emit: function() {
                 this.debounce('emit', function(){
                     console.log('emit');
                     console.log(this.socket);
                     var self = this;
-                    if (this.mode == 'emit' && this.socket) {
+                    if (this.socket) {
                         console.log(this.socket);
                         console.log('emit control');
-                        //ll = [self.lonLat[1], self.lonLat[0]]
-                        self.socket.emit('control_signal', {lonLat: self.lonLat});
+                        self.socket.emit('update_map', {lonLat: this.lonLat, zoomLevel: this.zoomLevel});
                     }
-                    console.log(this.lonLat);
-                    console.log(this.zoomLevel);
-                }, 500);
-            },
-            _phraseChanged: function(newPhrase, oldPhrase) {
-                console.log(newPhrase);
-                console.log(oldPhrase);
-                if (oldPhrase) {
-                    this.$.ajax.body = JSON.stringify({
-                                q: newPhrase,
-                                lang: "en",
-                                sessionId: "polymap-1"
-                            });
-                    console.log(this.$.ajax)
-                    this.$.ajax.generateRequest();
-                }
-            },
-            _responsePhraseChanged: function(newPhrase, oldPhrase) {
-                console.log(newPhrase);
+                }, 1);
             }
         });
     </script>
