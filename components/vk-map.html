@@ -35,6 +35,12 @@
                     reflectToAttribute: true,
                     readOnly: false
                 },
+                mapConfigRequest: {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
+                    readOnly: true
+                },
                 // Current map state carries more than just zoom / lon
                 currentMapState: {
                     type: Object,
@@ -84,10 +90,12 @@
 
                 this.map.on('moveend', function(){
                     this._updateCurrentMapState(lock = false);
+                    this._issueMapConfigRequest();
                 }.bind(this))
 
                 this.map.on('zoomend', function(){
                     this._updateCurrentMapState(lock = false);
+                    this._issueMapConfigRequest();
                 }.bind(this))
 
                 this.set('mapConfig', {
@@ -107,6 +115,15 @@
                    console.log('new state: ')
                    console.log(mapState);
                    this._setCurrentMapState(mapState);
+               }
+           },
+           _issueMapConfigRequest: function() {
+               if (this.map) {
+                   console.log('issue map config request')
+                   mapState = this.currentMapState;
+                   // TODO - delete locked.
+                   console.log(mapState);
+                   this._setMapConfigRequest(mapState);
                }
            },
            _handleMapConfigChange: function() {

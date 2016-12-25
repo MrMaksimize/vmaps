@@ -46,7 +46,7 @@
     <template is="dom-bind">
         <vk-map-controller
             current-map-state={{currentMapState}}
-            map-config-in={{mapConfigRequest}}
+            map-config-in=[[mapConfigRequest]]
             map-config-out={{mapConfigOut}}>
             <!--<vk-voice-search active={{active}}
                 phrase="{{phrase}}"
@@ -55,8 +55,8 @@
                 zoom-level={{zoomLevel}}
                 lon-lat="{{lonLat}}">
             </vk-voice-search>-->
-            <vk-remote-control
-                map-config=[[mapConfigOut]]>
+            <!--<vk-remote-control
+                map-config=[[mapConfigOut]]>-->
             </vk-remote-control>
             <!--<vk-geocoder
                 geo-search-term="{{geoSearchTerm}}"
@@ -65,6 +65,7 @@
             <!--$$('vk-map')[0].set('lonLat', [-81, 20]) -->
             <vk-map
                 current-map-state={{currentMapState}}
+                map-config-request={{mapConfigRequest}}
                 map-config=[[mapConfigOut]]>
             </vk-map>
             <!--<vk-geocoder place-data="{{placeData}}" lon-lat="{{lonLat}}"></vk-geocoder>
