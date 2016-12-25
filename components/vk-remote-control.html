@@ -11,40 +11,41 @@
         Polymer({
             is: 'vk-remote-control',
             properties: {
-                active: {
-                    type: Boolean,
-                    value: false,
-                    reflectToAttribute: true
-                },
                 dataSets: {
                     type: Array,
                     notify: true,
                     reflectToAttribute: true
                 },
-                zoomLevel: {
-                    type: Number,
-                    value: 7,
-                    notify: true,
-                    reflectToAttribute: true
-                },
-                lonLat: {
-                    type: Array,
-                    notify: true,
-                    reflectToAttribute: true
+                // Downward flow
+                mapConfig: {
+                    type: Object,
+                    value: function(){
+                        return {
+                            lonLat:[-117.16, 32.71],
+                            zoom: 7
+                        };
+                    },
+                    notify: false,
+                    reflectToAttribute: true,
+                    readOnly: false
                 }
             },
             observers: [
                 //TODO -- these three should be an object
-                '_emit(lonLat.*, zoomLevel)'
                 //'_updateMapData(dataSets.*)'
+                '_handleMapConfigChanged(mapConfig*)'
             ],
             //listeners: {
             //    'vk-map-moved': '_emit'
             //},
+            _handleMapConfigChanged: function() {
+                console.log('rc mapconfig change')
+            },
 
             attached: function() {
                 console.log('ready');
-                this.socket = io('http://localhost:3000');
+                /*this.socket = io('http://localhost:3000');
+                //this.socket = io('http://fc1e08a4.ngrok.io');
                 var self = this;
                 console.log(this.socket);
                 this.socket.on('connect', function(){
@@ -52,7 +53,7 @@
                     self.socket.on('update_map', function(data){
                       self.handleSocketMsg(data)
                     });
-                });
+                });*/
             },
             handleSocketMsg: function(data) {
                 this._data = data;

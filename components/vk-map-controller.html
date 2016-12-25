@@ -1,0 +1,65 @@
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>-->
+<link rel="import" href="../bower_components/polymer/polymer.html" />
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="./vk-icon-toggle.html">
+<link rel="import" href="./vk-simple-overlay.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
+<dom-module id="vk-map-controller">
+    <script type="text/javascript">
+        Polymer({
+            is: 'vk-map-controller',
+            properties: {
+                dataSets: {
+                    type: Array,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                // Downward only flow
+                mapConfigIn: {
+                    type: Object,
+                    value: function(){
+                        return {
+                            lonLat:[-117.16, 32.71],
+                            zoom: 7
+                        };
+                    },
+                    notify: false,
+                    reflectToAttribute: true,
+                    readOnly: false
+                },
+                // Upward only flow
+                mapConfigOut: {
+                    type: Object,
+                    value: function(){
+                        return {
+                            lonLat:[-117.16, 32.71],
+                            zoom: 7
+                        };
+                    },
+                    notify: true,
+                    reflectToAttribute: true,
+                    readOnly: true,
+                }
+            },
+            attached: function() {
+                console.log('map-controller attached');
+                setTimeout(function(){
+                    console.log('set mc')
+                    this._setMapConfigOut({
+                        lonLat:[-115.16, 33.71],
+                        zoom: 10
+                    })
+                }.bind(this), 5000)
+            },
+            observers: [
+                '_handleMapConfigInChanged(mapConfigIn*)'
+            ],
+            _handleMapConfigInChanged: function() {
+                console.log()
+            }
+
+        });
+    </script>
+</dom-module>
