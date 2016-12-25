@@ -24,9 +24,9 @@
                     readOnly: false
                 },
                 // Downward only flow
-                mapConfigRequest: {
+                mapConfigIn: {
                     type: Object,
-                    notify: false,
+                    notify: true,
                     reflectToAttribute: true,
                     readOnly: false
                 },
@@ -42,15 +42,29 @@
                 console.log('map-controller attached');
             },
             observers: [
-                '_handleMapConfigRequest(mapConfigRequest*)'
+                '_handleMapConfigRequest(mapConfigIn.*)'
             ],
             _handleMapConfigRequest: function() {
                 console.log('request');
-                console.log(this.mapConfigRequest)
+                console.log(this.mapConfigIn)
                 console.log('currentMapState');
                 console.log(this.currentMapState)
+                if (this._shouldUpdateMap() === true) {
+                    this._setMapConfigOut(this.mapConfigIn);
+                }
+            },
+            _shouldUpdateMap: function() {
+                if (this.currentMapState.zoom !== this.mapConfigIn.zoom &&
+                    this.currentMapState.lonLat[0] !== this.mapConfigIn.lonLat[0] &&
+                    this.currentMapState.lonLat[1] !== this.mapConfigIn.lonLat[1] &&
+                    this.currentMapState.locked !== true) {
+                        console.log('issue update')
+                        return true;
+                    }
+                else {
+                    return false;
+                }
             }
-
         });
     </script>
 </dom-module>
