@@ -45,6 +45,8 @@
 <body>
     <template is="dom-bind">
         <vk-map-controller
+            current-map-state={{currentMapState}}
+            map-config-in={{mapConfigRequest}}
             map-config-out={{mapConfigOut}}>
             <!--<vk-voice-search active={{active}}
                 phrase="{{phrase}}"
@@ -62,6 +64,7 @@
             </vk-geocoder>-->
             <!--$$('vk-map')[0].set('lonLat', [-81, 20]) -->
             <vk-map
+                current-map-state={{currentMapState}}
                 map-config=[[mapConfigOut]]>
             </vk-map>
             <!--<vk-geocoder place-data="{{placeData}}" lon-lat="{{lonLat}}"></vk-geocoder>
@@ -72,14 +75,14 @@
     </template>
 
     <script>
-        window.addEventListener('WebComponentsReady', function(){
+        /*window.addEventListener('WebComponentsReady', function(){
             var template = document.querySelector('template');
 
             document.addEventListener('vk-map-moved', function(evt){
                 debugger;
                 console.log(evt);
             });
-        });
+        });*/
     </script>
 
     <script src='http://mrm-screen.s3.amazonaws.com/api.ai.min.js'></script>
