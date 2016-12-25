@@ -31,24 +31,13 @@
                 // Downward data flow
                 mapConfig: {
                     type: Object,
-                    value: function(){
-                        return {
-                            lonLat:[-117.16, 32.71],
-                            zoom: 7
-                        };
-                    },
                     notify: false,
                     reflectToAttribute: true,
                     readOnly: false
                 },
+                // Current map state carries more than just zoom / lon
                 currentMapState: {
                     type: Object,
-                    value: function(){
-                       return {
-                            lonLat:[-117.16, 32.71],
-                            zoom: 7
-                        };
-                    },
                     notify: true,
                     reflectToAttribute: true,
                     readOnly: true
@@ -78,15 +67,48 @@
                 var self = this;
                 this.map = new mapboxgl.Map({
                     container: 'map', // container id
-                    style: 'mapbox://styles/mapbox/dark-v9', //stylesheet location
-                    center: this.mapConfig.lonLat, // starting position
-                    zoom: this.mapConfig.zoom // starting zoom
+                    style: 'mapbox://styles/mapbox/dark-v9' //stylesheet location
                 });
                 this.layerChildren = {};
+                // Set current map state
+                //this._updateCurrentMapState(lock = false);
 
-                this.map.on('')
+                // Bind Events
+                this.map.on('movestart', function(){
+                    this._updateCurrentMapState(lock = true);
+                }.bind(this))
 
+                this.map.on('zoomstart', function(){
+                    this._updateCurrentMapState(lock = true);
+                }.bind(this))
+
+                this.map.on('moveend', function(){
+                    this._updateCurrentMapState(lock = false);
+                }.bind(this))
+
+                this.map.on('zoomend', function(){
+                    this._updateCurrentMapState(lock = false);
+                }.bind(this))
+
+                this.set('mapConfig', {
+                    lonLat:[-117.16, 32.71],
+                    zoom: 7
+                });
             },
+           _updateCurrentMapState: function(lock = true) {
+               if (this.map && this.map.getZoom() !== 0) {
+                   var center = this.map.getCenter();
+                   var zoom = this.map.getZoom();
+                   mapState = {
+                       lonLat: center,
+                       zoom: zoom,
+                       locked: lock
+                   }
+                   console.log('new state: ')
+                   console.log(mapState);
+                   this._setCurrentMapState(mapState);
+               }
+           },
            _handleMapConfigChange: function() {
                 console.log('Map config changed.')
                 console.log(this.mapConfig);
@@ -102,7 +124,7 @@
                     });
                 }
             },
-            _updateMapData: function() {
+            /*_updateMapData: function() {
                 if (this.map) {
                     console.log('update');
                     if (this.dataSets.length == 0 && this.map) {
@@ -131,7 +153,7 @@
                         }
                     }
                 }
-            }
+            }*/
         });
     </script>
 </dom-module>

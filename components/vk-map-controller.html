@@ -16,15 +16,16 @@
                     notify: true,
                     reflectToAttribute: true
                 },
-                // Downward only flow
-                mapConfigIn: {
+                // Only receive
+                currentMapState: {
                     type: Object,
-                    value: function(){
-                        return {
-                            lonLat:[-117.16, 32.71],
-                            zoom: 7
-                        };
-                    },
+                    notify: false,
+                    reflectToAttribute: true,
+                    readOnly: false
+                },
+                // Downward only flow
+                mapConfigRequest: {
+                    type: Object,
                     notify: false,
                     reflectToAttribute: true,
                     readOnly: false
@@ -32,12 +33,6 @@
                 // Upward only flow
                 mapConfigOut: {
                     type: Object,
-                    value: function(){
-                        return {
-                            lonLat:[-117.16, 32.71],
-                            zoom: 7
-                        };
-                    },
                     notify: true,
                     reflectToAttribute: true,
                     readOnly: true,
@@ -45,19 +40,15 @@
             },
             attached: function() {
                 console.log('map-controller attached');
-                setTimeout(function(){
-                    console.log('set mc')
-                    this._setMapConfigOut({
-                        lonLat:[-115.16, 33.71],
-                        zoom: 10
-                    })
-                }.bind(this), 5000)
             },
             observers: [
-                '_handleMapConfigInChanged(mapConfigIn*)'
+                '_handleMapConfigRequest(mapConfigRequest*)'
             ],
-            _handleMapConfigInChanged: function() {
-                console.log()
+            _handleMapConfigRequest: function() {
+                console.log('request');
+                console.log(this.mapConfigRequest)
+                console.log('currentMapState');
+                console.log(this.currentMapState)
             }
 
         });

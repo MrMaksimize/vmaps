@@ -19,15 +19,15 @@
                 // Downward flow
                 mapConfig: {
                     type: Object,
-                    value: function(){
-                        return {
-                            lonLat:[-117.16, 32.71],
-                            zoom: 7
-                        };
-                    },
                     notify: false,
                     reflectToAttribute: true,
                     readOnly: false
+                },
+                mapConfigRequest: {
+                    type: Object,
+                    notify: true,
+                    readOnly: true,
+                    reflectToAttribute: true
                 }
             },
             observers: [
