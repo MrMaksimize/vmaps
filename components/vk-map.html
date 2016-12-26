@@ -81,22 +81,23 @@
 
                 // Bind Events
                 this.map.on('movestart', function(){
+                    console.log('movestart!!');
                     this._updateCurrentMapState(lock = true);
                 }.bind(this))
 
-                this.map.on('zoomstart', function(){
+                /*this.map.on('zoomstart', function(){
                     this._updateCurrentMapState(lock = true);
-                }.bind(this))
+                }.bind(this))*/
 
                 this.map.on('moveend', function(){
                     this._updateCurrentMapState(lock = false);
                     this._issueMapConfigRequest();
                 }.bind(this))
 
-                this.map.on('zoomend', function(){
+                /*this.map.on('zoomend', function(){
                     this._updateCurrentMapState(lock = false);
                     this._issueMapConfigRequest();
-                }.bind(this))
+                }.bind(this))*/
 
                 this.set('mapConfig', {
                     lonLat:[-117.16, 32.71],
