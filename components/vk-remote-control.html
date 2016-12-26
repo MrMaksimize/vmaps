@@ -31,11 +31,8 @@
                 }
             },
             observers: [
-                '_handleMapConfigChanged(mapConfig*)'
+                '_handleMapConfigChanged(mapConfig.*)'
             ],
-            _handleMapConfigChanged: function() {
-                console.log('rc mapconfig change')
-            },
             attached: function() {
                 console.log('ready');
                 this.socket = io('http://localhost:3000');
@@ -47,19 +44,24 @@
                     }.bind(this));
                 }.bind(this));
             },
-            _handleSocketMsg: function(data) {
+            _handleMapConfigChanged: function() {
+                console.log('rc mapconfig change')
+                //this._emitMapConfigChanged();
             },
-            _emit: function() {
-                this.debounce('emit', function(){
-                    console.log('emit');
+            _handleSocketMsg: function(data) {
+                console.log('socket msg received');
+                this._setMapConfigRequest(data.mapConfig);
+            },
+            _emitMapConfigChanged: function() {
+                console.log('emit');
+                console.log(this.socket);
+                if (this.socket) {
                     console.log(this.socket);
-                    var self = this;
-                    if (this.socket) {
-                        console.log(this.socket);
-                        console.log('emit control');
-                        self.socket.emit('update_map', {lonLat: this.lonLat, zoomLevel: this.zoomLevel});
-                    }
-                }, 1);
+                    console.log('emit control');
+                    this.socket.emit('update_map', {
+                        'mapConfig': this.mapConfig
+                    });
+                }
             }
         });
     </script>
