@@ -58,7 +58,7 @@
 
             observers: [
                 //TODO -- these three should be an object
-                '_handleMapConfigChange(mapConfig.*)'
+                '_handleMapConfigChanged(mapConfig.*)'
             ],
             ready: function() {
                 this.addEventListener('layerAdded', this.layerAdded);
@@ -76,8 +76,6 @@
                     style: 'mapbox://styles/mapbox/dark-v9' //stylesheet location
                 });
                 this.layerChildren = {};
-                // Set current map state
-                //this._updateCurrentMapState(lock = false);
 
                 // Bind Events
                 this.map.on('movestart', function(){
@@ -85,24 +83,11 @@
                     this._updateCurrentMapState(lock = true);
                 }.bind(this))
 
-                /*this.map.on('zoomstart', function(){
-                    this._updateCurrentMapState(lock = true);
-                }.bind(this))*/
-
                 this.map.on('moveend', function(){
                     this._updateCurrentMapState(lock = false);
                     this._issueMapConfigRequest();
                 }.bind(this))
 
-                /*this.map.on('zoomend', function(){
-                    this._updateCurrentMapState(lock = false);
-                    this._issueMapConfigRequest();
-                }.bind(this))*/
-
-                this.set('mapConfig', {
-                    lonLat:[-117.16, 32.71],
-                    zoom: 7
-                });
             },
            _updateCurrentMapState: function(lock = true) {
                if (this.map && this.map.getZoom() !== 0) {
@@ -127,7 +112,7 @@
                    this._setMapConfigRequest(mapState);
                }
            },
-           _handleMapConfigChange: function() {
+           _handleMapConfigChanged: function() {
                 console.log('Map config changed.')
                 console.log(this.mapConfig);
                 this._redrawMap();
