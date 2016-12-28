@@ -35,8 +35,8 @@
             ],
             attached: function() {
                 console.log('ready');
-                this.socket = io('http://localhost:3000');
-                //this.socket = io('http://fc1e08a4.ngrok.io');
+                //this.socket = io('http://localhost:3000');
+                this.socket = io('http://5c6f9424.ngrok.io');
                 this.socket.on('connect', function(){
                     console.log('connected');
                     this.socket.on('update_map', function(data){
@@ -46,20 +46,23 @@
             },
             _handleMapConfigChanged: function() {
                 console.log('rc mapconfig change')
-                //this._emitMapConfigChanged();
+                console.log(this.id);
+                if (this.mapConfig[this.id]) {
+                    this._emitMapConfigChanged();
+                }
+
             },
             _handleSocketMsg: function(data) {
-                console.log('socket msg received');
-                this._setMapConfigRequest(data.mapConfig);
+                console.log('rc socket msg received');
+                request = {};
+                request[this.id] = data.mapConfig;
+                this._setMapConfigRequest(request);
             },
             _emitMapConfigChanged: function() {
-                console.log('emit');
-                console.log(this.socket);
                 if (this.socket) {
-                    console.log(this.socket);
                     console.log('emit control');
                     this.socket.emit('update_map', {
-                        'mapConfig': this.mapConfig
+                        'mapConfig': this.mapConfig[this.id]
                     });
                 }
             }

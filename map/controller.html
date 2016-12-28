@@ -44,10 +44,12 @@
 
 <body>
     <template is="dom-bind">
-        <vk-map-controller
+        <!--todo adjust binding directions-->
+        <vk-map-controller id='vk-map-controller'
             current-map-state={{currentMapState}}
             map-config-in=[[mapConfigRequest]]
-            map-config-out={{mapConfigOut}}>
+            map-config-out={{mapConfigOut}}
+            map-is-locked={{isLocked}}>
             <!--<vk-voice-search active={{active}}
                 phrase="{{phrase}}"
                 data-sets="{{dataSets}}"
@@ -55,7 +57,7 @@
                 zoom-level={{zoomLevel}}
                 lon-lat="{{lonLat}}">
             </vk-voice-search>-->
-            <vk-remote-control
+            <vk-remote-control id='vk-remote-control'
                 map-config=[[mapConfigOut]]
                 map-config-request={{mapConfigRequest}}>
             </vk-remote-control>
@@ -64,10 +66,11 @@
                 lon-lat="{{lonLat}}">
             </vk-geocoder>-->
             <!--$$('vk-map')[0].set('lonLat', [-81, 20]) -->
-            <vk-map
+            <vk-map id='vk-map'
                 current-map-state={{currentMapState}}
                 map-config-request={{mapConfigRequest}}
-                map-config=[[mapConfigOut]]>
+                map-config=[[mapConfigOut]]
+                is-locked={{isLocked}}>
             </vk-map>
             <!--<vk-geocoder place-data="{{placeData}}" lon-lat="{{lonLat}}"></vk-geocoder>
             <vk-api access-token="" base-url="" phrase="[[phrase]]" response="{{placeData}}">

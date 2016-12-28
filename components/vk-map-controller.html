@@ -23,6 +23,13 @@
                     reflectToAttribute: true,
                     readOnly: false
                 },
+                mapIsLocked: {
+                    type: Boolean,
+                    notify: false,
+                    reflectToAttribute: true,
+                    value: false,
+                    readOnly: false
+                },
                 // Downward only flow
                 mapConfigIn: {
                     type: Object,
@@ -50,23 +57,49 @@
                 '_handleMapConfigRequest(mapConfigIn.*)'
             ],
             _handleMapConfigRequest: function() {
-                console.log('request');
-                console.log(this.mapConfigIn)
-                console.log('currentMapState');
-                console.log(this.currentMapState)
-                if (this._shouldUpdateMap() === true) {
-                    this._setMapConfigOut(this.mapConfigIn);
+                console.log('handle map config request');
+                sender = Object.keys(this.mapConfigIn)[0]
+                request = this.mapConfigIn[sender];
+                /*setTimeout(function(){
+                    console.log('Asking map state');
+                    console.log(document.querySelector('#vk-map')._updateCurrentMapState());
+                }, 5000)*/
+                // This is kind of annoying.  Maybe better to just have output props.
+                if (sender === 'vk-map') {
+                    // vk-map requests should only get dispatched to socket.
+                    receiver = 'vk-remote-control';
+                    mapConfigOut = {}
+                    mapConfigOut[receiver] = request
+                    console.log('dispatch to vk-rc:')
+                    console.log(mapConfigOut);
+                    this._setMapConfigOut(mapConfigOut);
+
+                }
+                else if (sender === 'vk-remote-control') {
+                    receiver = 'vk-map'
+                    mapConfigOut = {}
+                    mapConfigOut[receiver] = request
+                    if (this._shouldUpdateMap(request) === true) {
+                        console.log('dispatch to vk-map:')
+                        this._setMapConfigOut(mapConfigOut);
+                    }
                 }
             },
-            _shouldUpdateMap: function() {
-                if (this.currentMapState.zoom !== this.mapConfigIn.zoom &&
-                    this.currentMapState.lonLat[0] !== this.mapConfigIn.lonLat[0] &&
-                    this.currentMapState.lonLat[1] !== this.mapConfigIn.lonLat[1] &&
-                    this.currentMapState.locked !== true) {
+            // Deprecated?
+            _shouldUpdateMap: function(request = null) {
+                document.querySelector('#vk-map')._updateCurrentMapState();
+                if (!request) {
+                    alert('no');
+                }
+                if ((this.currentMapState.zoom !== request.zoom ||
+                    this.currentMapState.lonLat[0] !== request.lonLat[0] ||
+                    this.currentMapState.lonLat[1] !== request.lonLat[1]) &&
+                    this.mapIsLocked !== true) {
                         console.log('issue update')
                         return true;
                     }
                 else {
+                    debugger;
                     return false;
                 }
             }
