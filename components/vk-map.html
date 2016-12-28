@@ -48,6 +48,13 @@
                     reflectToAttribute: true,
                     readOnly: true
                 },
+                isLocked: {
+                    type: Boolean,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: false,
+                    readOnly: true
+                },
                 dataSets: {
                     type: Array,
                     value: function(){
@@ -68,65 +75,84 @@
             },
 
             attached: function() {
-                console.log('map ready');
                 mapboxgl.accessToken = 'pk.eyJ1IjoibXJtYWtzaW1pemUiLCJhIjoiRlRwLWwyVSJ9.--Y4RdEJ_5ZuJjSUkx34vQ';
                 var self = this;
                 this.map = new mapboxgl.Map({
                     container: 'map', // container id
-                    style: 'mapbox://styles/mapbox/dark-v9' //stylesheet location
+                    style: 'mapbox://styles/mapbox/dark-v9', //stylesheet location
+                    center: [-117.16, 32.71],
+                    zoom: 7
                 });
                 this.layerChildren = {};
+                this._updateCurrentMapState();
 
                 // Bind Events
                 this.map.on('movestart', function(){
                     console.log('movestart!!');
-                    this._updateCurrentMapState(lock = true);
+                    //this._updateCurrentMapState(lock = true);
+                    this._setIsLocked(true);
                 }.bind(this))
 
                 this.map.on('moveend', function(){
-                    this._updateCurrentMapState(lock = false);
+                    console.log('moveEnd');
+                    //this._updateCurrentMapState();
                     this._issueMapConfigRequest();
+                    this._setIsLocked(false);
                 }.bind(this))
 
             },
-           _updateCurrentMapState: function(lock = true) {
-               if (this.map && this.map.getZoom() !== 0) {
+           _updateCurrentMapState: function() {
+               if (this.map) {
+                   console.log('update current map state')
                    var center = this.map.getCenter();
                    var zoom = this.map.getZoom();
                    mapState = {
-                       lonLat: center,
-                       zoom: zoom,
-                       locked: lock
+                       lonLat: [center.lng, center.lat],
+                       zoom: zoom
                    }
-                   console.log('new state: ')
-                   console.log(mapState);
                    this._setCurrentMapState(mapState);
                }
            },
            _issueMapConfigRequest: function() {
                if (this.map) {
-                   console.log('issue map config request')
+                   console.log('map: issue map config request')
+                   this._updateCurrentMapState();
                    mapState = this.currentMapState;
+                   request = {};
+                   request[this.id] = mapState;
                    // TODO - delete locked.
                    console.log(mapState);
-                   this._setMapConfigRequest(mapState);
+                   this._setMapConfigRequest(request);
                }
            },
            _handleMapConfigChanged: function() {
-                console.log('Map config changed.')
                 console.log(this.mapConfig);
-                this._redrawMap();
-            },
-            _redrawMap: function() {
-                console.log('redraw map');
-                if (this.map && this.mapConfig) {
+                if (this.mapConfig[this.id]) {
+                    this._redrawMap();
+                }
+           },
+           _redrawMap: function() {
+                if (this.map && this.mapConfig && this._shouldUpdateMap() === true) {
                     console.log('redraw map exec');
                     this.map.easeTo({
-                        center: this.mapConfig.lonLat,
-                        zoom: this.mapConfig.zoom
+                        center: this.mapConfig[this.id].lonLat,
+                        zoom: this.mapConfig[this.id].zoom
                     });
                 }
-            },
+           },
+           _shouldUpdateMap: function() {
+               //this._updateCurrentMapState();
+              if ((this.currentMapState.zoom !== this.mapConfig.zoom ||
+                  this.currentMapState.lonLat[0] !== this.mapConfig.lonLat[0] ||
+                  this.currentMapState.lonLat[1] !== this.mapConfig.lonLat[1]) &&
+                  this.isLocked !== true ) {
+                      console.log('issue update')
+                      return true;
+                  }
+              else {
+                  return false;
+              }
+           }
             /*_updateMapData: function() {
                 if (this.map) {
                     console.log('update');
