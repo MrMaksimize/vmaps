@@ -35,8 +35,8 @@
             ],
             attached: function() {
                 console.log('ready');
-                //this.socket = io('http://localhost:3000');
-                this.socket = io('http://5c6f9424.ngrok.io');
+                this.socket = io('http://localhost:3000');
+                //this.socket = io('http://0158e1d3.ngrok.io');
                 this.socket.on('connect', function(){
                     console.log('connected');
                     this.socket.on('update_map', function(data){

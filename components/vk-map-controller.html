@@ -47,11 +47,6 @@
             },
             attached: function() {
                 console.log('map-controller attached');
-                // Init default map state.
-                this._setMapConfigOut({
-                    lonLat:[-117.16, 32.71],
-                    zoom: 7
-                });
             },
             observers: [
                 '_handleMapConfigRequest(mapConfigIn.*)'
