@@ -6,6 +6,7 @@
 <link rel="import" href="./vk-icon-toggle.html">
 <link rel="import" href="./vk-simple-overlay.html">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
+<script src="/lib/sharedb_client.js"></script>
 <dom-module id="vk-remote-control">
     <script type="text/javascript">
         Polymer({
@@ -34,15 +35,19 @@
                 '_handleMapConfigChanged(mapConfig.*)'
             ],
             attached: function() {
-                console.log('ready');
-                this.socket = io('http://localhost:3000');
-                //this.socket = io('http://0158e1d3.ngrok.io');
-                this.socket.on('connect', function(){
-                    console.log('connected');
-                    this.socket.on('update_map', function(data){
-                      this._handleSocketMsg(data)
-                    }.bind(this));
-                }.bind(this));
+                console.log('attach vkrc');
+                var socket = new WebSocket('ws://localhost:8080');
+                var connection = new sharedb.Connection(socket);
+                var doc = connection.get('examples', 'counter');
+                // Get initial value of document and subscribe to changes
+                doc.subscribe(showNumbers);
+                // When document changes (by this client or any other, or the server),
+                // update the number on the page
+                doc.on('op', showNumbers);
+
+                function showNumbers() {
+                    console.log(doc.data.numClicks);
+                };
             },
             _handleMapConfigChanged: function() {
                 console.log('rc mapconfig change')
@@ -54,6 +59,7 @@
             },
             _handleSocketMsg: function(data) {
                 console.log('rc socket msg received');
+                console.log(data);
                 request = {};
                 request[this.id] = data.mapConfig;
                 this._setMapConfigRequest(request);
@@ -61,9 +67,9 @@
             _emitMapConfigChanged: function() {
                 if (this.socket) {
                     console.log('emit control');
-                    this.socket.emit('update_map', {
-                        'mapConfig': this.mapConfig[this.id]
-                    });
+                    //this.socket.emit('update_map', {
+                    //    'mapConfig': this.mapConfig[this.id]
+                    //});
                 }
             }
         });
