@@ -1,26 +1,39 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var http = require('http');
+var express = require('express');
+var ShareDB = require('sharedb');
+var WebSocket = require('ws');
+var WebSocketJSONStream = require('websocket-json-stream');
 
-app.get('/control', function(req, res){
-  res.sendFile(__dirname + '/control.html');
-});
+var backend = new ShareDB();
+createDoc(startServer);
 
-app.get('/fmap', function(req, res){
-  res.sendFile(__dirname + '/fmap.html');
-});
-
-
-io.on('connection', function(socket){
-  console.log('socket_on');
-  socket.on('update_map', function(data){
-    console.log(data);
-    socket.broadcast.emit('update_map', data)
+// Create initial document then fire callback
+function createDoc(callback) {
+  var connection = backend.connect();
+  var doc = connection.get('examples', 'counter');
+  doc.fetch(function(err) {
+    if (err) throw err;
+    if (doc.type === null) {
+      doc.create({numClicks: 0}, callback);
+      return;
+    }
+    callback();
   });
-});
+}
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
-});
+function startServer() {
+  // Create a web server to serve files and listen to WebSocket connections
+  var app = express();
+  //app.use(express.static('static'));
+  var server = http.createServer(app);
 
+  // Connect any incoming WebSocket connection to ShareDB
+  var wss = new WebSocket.Server({server: server});
+  wss.on('connection', function(ws, req) {
+    var stream = new WebSocketJSONStream(ws);
+    backend.listen(stream);
+  });
 
+  server.listen(8080);
+  console.log('Listening on http://localhost:8080');
+}
