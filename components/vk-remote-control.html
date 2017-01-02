@@ -24,6 +24,7 @@
                     reflectToAttribute: true,
                     readOnly: false
                 },
+                // Upward Flow
                 mapConfigRequest: {
                     type: Object,
                     notify: true,
@@ -36,18 +37,12 @@
             ],
             attached: function() {
                 console.log('attach vkrc');
-                var socket = new WebSocket('ws://localhost:8080');
-                var connection = new sharedb.Connection(socket);
-                var doc = connection.get('examples', 'counter');
+                this.socket = new WebSocket('ws://localhost:8080');
+                this.connection = new sharedb.Connection(this.socket);
+                this.doc = this.connection.get('vmaps', 'controller');
                 // Get initial value of document and subscribe to changes
-                doc.subscribe(showNumbers);
-                // When document changes (by this client or any other, or the server),
-                // update the number on the page
-                doc.on('op', showNumbers);
-
-                function showNumbers() {
-                    console.log(doc.data.numClicks);
-                };
+                this.doc.subscribe(this._handleSocketMsg.bind(this));
+                this.doc.on('op', this._handleSocketMsg.bind(this));
             },
             _handleMapConfigChanged: function() {
                 console.log('rc mapconfig change')
@@ -57,16 +52,25 @@
                 }
 
             },
-            _handleSocketMsg: function(data) {
+            _handleSocketMsg: function(err) {
+                if (err) {
+                    console.log(err);
+                }
                 console.log('rc socket msg received');
-                console.log(data);
+                console.log(this.doc.data);
                 request = {};
-                request[this.id] = data.mapConfig;
+                request[this.id] = this.doc.data.mapConfig;
+                this.oldMapConfig = this.doc.data.mapConfig;
                 this._setMapConfigRequest(request);
             },
             _emitMapConfigChanged: function() {
-                if (this.socket) {
+                if (this.doc.data) {
                     console.log('emit control');
+                    this.doc.submitOp([{
+                        p: ['mapConfig'],
+                        od: this.oldMapConfig,
+                        oi: this.mapConfig[this.id]
+                    }]);
                     //this.socket.emit('update_map', {
                     //    'mapConfig': this.mapConfig[this.id]
                     //});
