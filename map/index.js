@@ -10,11 +10,16 @@ createDoc(startServer);
 // Create initial document then fire callback
 function createDoc(callback) {
   var connection = backend.connect();
-  var doc = connection.get('examples', 'counter');
+  var doc = connection.get('vmaps', 'controller');
   doc.fetch(function(err) {
     if (err) throw err;
     if (doc.type === null) {
-      doc.create({numClicks: 0}, callback);
+        doc.create({
+            'mapConfig': {
+                lonLat: [-117, 32],
+                zoom: 7
+            }
+        }, callback);
       return;
     }
     callback();
