@@ -21,57 +21,51 @@
             is: 'vk-map',
             properties: {
                 /**
-                * latLon listen from the outside world for a new lat/lon pair (i.e.)
+                * lonLat listen from the outside world for a new lat/lon pair (i.e.)
                 * a pair of coordinates) and update the map with the result.
                 *
-                * @property latLon
+                * @property lonLat
                 * @type Array
                 * @default [-74.50, 40]
                 */
-                latLon: {
-                    type: Array,
-                    value: function(){
-                        return [-117.16, 32.71]
-                    },
-                    notify: true,
-                    reflectToAttribute: true
+                // Downward data flow
+                mapConfig: {
+                    type: Object,
+                    notify: false,
+                    reflectToAttribute: true,
+                    readOnly: false
                 },
-                /*bounds: {
-                    type: Array,
-                    value: function(){
-                        return [
-                            [-117.309797, 32.534871]
-                            [-116.905723, 33.114185]
-                        ]
-                    }
-                },*/
+                mapConfigRequest: {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
+                    readOnly: true
+                },
+                // Current map state carries more than just zoom / lon
+                currentMapState: {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
+                    readOnly: true
+                },
+                isLocked: {
+                    type: Boolean,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: false,
+                    readOnly: true
+                },
                 dataSets: {
                     type: Array,
                     value: function(){
                         return [];
                     },
                 },
-                zoomLevel: {
-                    type: Number,
-                    // can't figure out why i can't provide default here.
-                    value: function(){
-                        return 7;
-                    },
-                    notify: true,
-                    reflectToAttribute: true
-
-                },
-                map: {
-                    type: Object,
-                    notify: true,
-                    reflectToAttribute: true,
-                }
             },
 
             observers: [
                 //TODO -- these three should be an object
-                '_updateMap(latLon.*, zoomLevel)', 
-                '_updateMapData(dataSets.*)'
+                '_handleMapConfigChanged(mapConfig.*)'
             ],
             ready: function() {
                 this.addEventListener('layerAdded', this.layerAdded);
@@ -86,27 +80,80 @@
                 this.map = new mapboxgl.Map({
                     container: 'map', // container id
                     style: 'mapbox://styles/mapbox/dark-v9', //stylesheet location
-                    center: this.latLon, // starting position
-                    zoom: this.zoomLevel // starting zoom
+                    center: [-117.16, 32.71],
+                    zoom: 7
                 });
-                // In theory this should never happen
-                /*this.map.on('zoomend', function() {
-                    self.zoomLevel = this.getZoom()
-                })*/
                 this.layerChildren = {};
-                
-            },
+                this._updateCurrentMapState();
 
-            _updateMap: function(newVal, oldVal) {
-                if (this.map) {
-                    this.map.flyTo({
-                        center: this.latLon,
-                        zoom: this.zoomLevel
+                // Bind Events
+                this.map.on('movestart', function(){
+                    console.log('movestart!!');
+                    //this._updateCurrentMapState(lock = true);
+                    this._setIsLocked(true);
+                }.bind(this))
+
+                this.map.on('moveend', function(){
+                    console.log('moveEnd');
+                    //this._updateCurrentMapState();
+                    this._issueMapConfigRequest();
+                    this._setIsLocked(false);
+                }.bind(this))
+
+            },
+           _updateCurrentMapState: function() {
+               if (this.map) {
+                   console.log('update current map state')
+                   var center = this.map.getCenter();
+                   var zoom = this.map.getZoom();
+                   mapState = {
+                       lonLat: [center.lng, center.lat],
+                       zoom: zoom
+                   }
+                   this._setCurrentMapState(mapState);
+               }
+           },
+           _issueMapConfigRequest: function() {
+               if (this.map) {
+                   console.log('map: issue map config request')
+                   this._updateCurrentMapState();
+                   mapState = this.currentMapState;
+                   request = {};
+                   request[this.id] = mapState;
+                   // TODO - delete locked.
+                   console.log(mapState);
+                   this._setMapConfigRequest(request);
+               }
+           },
+           _handleMapConfigChanged: function() {
+                console.log(this.mapConfig);
+                if (this.mapConfig[this.id]) {
+                    this._redrawMap();
+                }
+           },
+           _redrawMap: function() {
+                if (this.map && this.mapConfig && this._shouldUpdateMap() === true) {
+                    console.log('redraw map exec');
+                    this.map.easeTo({
+                        center: this.mapConfig[this.id].lonLat,
+                        zoom: this.mapConfig[this.id].zoom
                     });
                 }
-            },
-
-            _updateMapData: function() {
+           },
+           _shouldUpdateMap: function() {
+               //this._updateCurrentMapState();
+              if ((this.currentMapState.zoom !== this.mapConfig.zoom ||
+                  this.currentMapState.lonLat[0] !== this.mapConfig.lonLat[0] ||
+                  this.currentMapState.lonLat[1] !== this.mapConfig.lonLat[1]) &&
+                  this.isLocked !== true ) {
+                      console.log('issue update')
+                      return true;
+                  }
+              else {
+                  return false;
+              }
+           }
+            /*_updateMapData: function() {
                 if (this.map) {
                     console.log('update');
                     if (this.dataSets.length == 0 && this.map) {
@@ -135,7 +182,7 @@
                         }
                     }
                 }
-            }
+            }*/
         });
     </script>
 </dom-module>

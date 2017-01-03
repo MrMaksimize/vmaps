@@ -1,0 +1,102 @@
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>-->
+<link rel="import" href="../bower_components/polymer/polymer.html" />
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="./vk-icon-toggle.html">
+<link rel="import" href="./vk-simple-overlay.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
+<dom-module id="vk-map-controller">
+    <script type="text/javascript">
+        Polymer({
+            is: 'vk-map-controller',
+            properties: {
+                dataSets: {
+                    type: Array,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                // Only receive
+                currentMapState: {
+                    type: Object,
+                    notify: false,
+                    reflectToAttribute: true,
+                    readOnly: false
+                },
+                mapIsLocked: {
+                    type: Boolean,
+                    notify: false,
+                    reflectToAttribute: true,
+                    value: false,
+                    readOnly: false
+                },
+                // Downward only flow
+                mapConfigIn: {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
+                    readOnly: false
+                },
+                // Upward only flow
+                mapConfigOut: {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true,
+                    readOnly: true,
+                }
+            },
+            attached: function() {
+                console.log('map-controller attached');
+            },
+            observers: [
+                '_handleMapConfigRequest(mapConfigIn.*)'
+            ],
+            _handleMapConfigRequest: function() {
+                console.log('handle map config request');
+                sender = Object.keys(this.mapConfigIn)[0]
+                request = this.mapConfigIn[sender];
+                /*setTimeout(function(){
+                    console.log('Asking map state');
+                    console.log(document.querySelector('#vk-map')._updateCurrentMapState());
+                }, 5000)*/
+                // This is kind of annoying.  Maybe better to just have output props.
+                if (sender === 'vk-map') {
+                    // vk-map requests should only get dispatched to socket.
+                    receiver = 'vk-remote-control';
+                    mapConfigOut = {}
+                    mapConfigOut[receiver] = request
+                    console.log('dispatch to vk-rc:')
+                    console.log(mapConfigOut);
+                    this._setMapConfigOut(mapConfigOut);
+
+                }
+                else if (sender === 'vk-remote-control') {
+                    receiver = 'vk-map'
+                    mapConfigOut = {}
+                    mapConfigOut[receiver] = request
+                    if (this._shouldUpdateMap(request) === true) {
+                        console.log('dispatch to vk-map:')
+                        this._setMapConfigOut(mapConfigOut);
+                    }
+                }
+            },
+            // Deprecated?
+            _shouldUpdateMap: function(request = null) {
+                document.querySelector('#vk-map')._updateCurrentMapState();
+                if (!request) {
+                    alert('no');
+                }
+                if ((this.currentMapState.zoom !== request.zoom ||
+                    this.currentMapState.lonLat[0] !== request.lonLat[0] ||
+                    this.currentMapState.lonLat[1] !== request.lonLat[1]) &&
+                    this.mapIsLocked !== true) {
+                        console.log('issue update')
+                        return true;
+                    }
+                else {
+                    return false;
+                }
+            }
+        });
+    </script>
+</dom-module>

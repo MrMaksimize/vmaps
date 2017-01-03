@@ -1,0 +1,81 @@
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>-->
+<link rel="import" href="../bower_components/polymer/polymer.html" />
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="./vk-icon-toggle.html">
+<link rel="import" href="./vk-simple-overlay.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
+<script src="/lib/sharedb_client.js"></script>
+<dom-module id="vk-remote-control">
+    <script type="text/javascript">
+        Polymer({
+            is: 'vk-remote-control',
+            properties: {
+                dataSets: {
+                    type: Array,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                // Downward flow
+                mapConfig: {
+                    type: Object,
+                    notify: false,
+                    reflectToAttribute: true,
+                    readOnly: false
+                },
+                // Upward Flow
+                mapConfigRequest: {
+                    type: Object,
+                    notify: true,
+                    readOnly: true,
+                    reflectToAttribute: true
+                }
+            },
+            observers: [
+                '_handleMapConfigChanged(mapConfig.*)'
+            ],
+            attached: function() {
+                console.log('attach vkrc');
+                this.socket = new WebSocket('ws://localhost:8080');
+                this.connection = new sharedb.Connection(this.socket);
+                this.doc = this.connection.get('vmaps', 'controller');
+                // Get initial value of document and subscribe to changes
+                this.doc.subscribe(this._handleSocketMsg.bind(this));
+                this.doc.on('op', this._handleSocketMsg.bind(this));
+            },
+            _handleMapConfigChanged: function() {
+                console.log('rc mapconfig change')
+                console.log(this.id);
+                if (this.mapConfig[this.id]) {
+                    this._emitMapConfigChanged();
+                }
+
+            },
+            _handleSocketMsg: function(err) {
+                if (err) {
+                    console.log(err);
+                }
+                console.log('rc socket msg received');
+                console.log(this.doc.data);
+                request = {};
+                request[this.id] = this.doc.data.mapConfig;
+                this.oldMapConfig = this.doc.data.mapConfig;
+                this._setMapConfigRequest(request);
+            },
+            _emitMapConfigChanged: function() {
+                if (this.doc.data) {
+                    console.log('emit control');
+                    this.doc.submitOp([{
+                        p: ['mapConfig'],
+                        od: this.oldMapConfig,
+                        oi: this.mapConfig[this.id]
+                    }]);
+                    //this.socket.emit('update_map', {
+                    //    'mapConfig': this.mapConfig[this.id]
+                    //});
+                }
+            }
+        });
+    </script>
+</dom-module>
