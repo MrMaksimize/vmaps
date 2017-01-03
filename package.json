@@ -1,7 +1,7 @@
 {
-  "name": "socket-chat-example",
+  "name": "vmaps-backend",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "",
   "dependencies": {
     "express": "^4.14.0",
     "sharedb": "^1.0.0-beta",
