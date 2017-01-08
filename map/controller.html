@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src="../bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <link rel="import" href="../bower_components/polymer/polymer.html">
+    <link rel="import" href="../components/vk-map.html">
+    <link rel="import" href="../components/vk-voice-search.html">
+    <link rel="import" href="../components/vk-remote-control.html">
+    <link rel="import" href="../components/vk-map-controller.html">
+    <title></title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        vk-map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        vk-voice-search {
+            background: black;
+            width: 50%;
+            height: 100px;
+            display: block;
+            z-index: 999999;
+            position: relative;
+            margin-left: auto;
+            margin-right:auto;
+            color: white;
+            margin-top: 30px;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <template is="dom-bind">
+        <!--todo adjust binding directions-->
+        <vk-map-controller id='vk-map-controller'
+            current-map-state={{currentMapState}}
+            map-config-in=[[mapConfigRequest]]
+            map-config-out={{mapConfigOut}}
+            map-is-locked={{isLocked}}>
+            <vk-voice-search active={{active}}
+                phrase="{{phrase}}"
+                data-sets="{{dataSets}}"
+                geo-search-term="{{geoSearchTerm}}"
+                map-config-request={{mapConfigRequest}}>
+            </vk-voice-search>
+            <vk-remote-control id='vk-remote-control'
+                map-config=[[mapConfigOut]]
+                map-config-request={{mapConfigRequest}}>
+            </vk-remote-control>
+            <!--$$('vk-map')[0].set('lonLat', [-81, 20]) -->
+            <vk-map id='vk-map'
+                current-map-state={{currentMapState}}
+                map-config-request={{mapConfigRequest}}
+                map-config=[[mapConfigOut]]
+                is-locked={{isLocked}}>
+            </vk-map>
+            <!--<vk-geocoder place-data="{{placeData}}" lon-lat="{{lonLat}}"></vk-geocoder>
+            <vk-api access-token="" base-url="" phrase="[[phrase]]" response="{{placeData}}">
+            </vk-api> -->
+        </vk-map-controller>
+
+    </template>
+
+    <script>
+        /*window.addEventListener('WebComponentsReady', function(){
+            var template = document.querySelector('template');
+
+            document.addEventListener('vk-map-moved', function(evt){
+                debugger;
+                console.log(evt);
+            });
+        });*/
+    </script>
+
+    <script src='http://mrm-screen.s3.amazonaws.com/api.ai.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.2/lodash.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v1.3.1/mapbox-gl-geocoder.js'></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
+</body>
+
+</html>
