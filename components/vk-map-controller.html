@@ -55,11 +55,7 @@
                 console.log('handle map config request');
                 sender = Object.keys(this.mapConfigIn)[0]
                 request = this.mapConfigIn[sender];
-                /*setTimeout(function(){
-                    console.log('Asking map state');
-                    console.log(document.querySelector('#vk-map')._updateCurrentMapState());
-                }, 5000)*/
-                // This is kind of annoying.  Maybe better to just have output props.
+                console.log(request);
                 if (sender === 'vk-map') {
                     // vk-map requests should only get dispatched to socket.
                     receiver = 'vk-remote-control';
@@ -70,7 +66,8 @@
                     this._setMapConfigOut(mapConfigOut);
 
                 }
-                else if (sender === 'vk-remote-control') {
+                else if (sender === 'vk-remote-control' || sender ===
+                        'vk-geocoder' || sender === 'vk-voice-search') {
                     receiver = 'vk-map'
                     mapConfigOut = {}
                     mapConfigOut[receiver] = request

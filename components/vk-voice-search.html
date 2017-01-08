@@ -7,6 +7,7 @@
 <link rel="import" href="./vk-voice-recognition.html">
 <link rel="import" href="./vk-icon-toggle.html">
 <link rel="import" href="./vk-simple-overlay.html">
+<link rel="import" href="./vk-geocoder.html">
 <dom-module id="vk-voice-search">
     <style>
       #voice-search-display {
@@ -60,6 +61,11 @@
             active={{active}}
             onclick="plain.open()">
         </vk-icon-toggle>
+        <vk-geocoder
+            id="vk-geocoder"
+            geo-search-term="[[geoSearchTerm]]"
+            map-config-request="{{mapConfigRequest}}">
+        </vk-geocoder>
         <vk-voice-recognition
             phrase="{{phrase}}"
             id="recognizer">
@@ -91,27 +97,15 @@
         Polymer({
             is: 'vk-voice-search',
             properties: {
-            active: {
-                type: Boolean,
-                value: false,
-                reflectToAttribute: true
-            },
-                /**
-                * phrase broadcasts the current active phrase.
-                *
-                * @property phrase
-                * @type String
-                * @default ""
-                */
+                active: {
+                    type: Boolean,
+                    value: false,
+                    reflectToAttribute: true
+                },
                 phrase: {
                     type: String,
                     value: "Say something...",
                     observer: '_phraseChanged'
-                },
-                responsePhrase: {
-                    type: String,
-                    value: "",
-                    observer: '_responsePhraseChanged'
                 },
                 geoSearchTerm: {
                     type: String,
@@ -124,18 +118,13 @@
                     notify: true,
                     reflectToAttribute: true
                 },
-                zoomLevel: {
-                    type: Number,
-                    value: 7,
+                // Upward Flow
+                mapConfigRequest: {
+                    type: Object,
                     notify: true,
-                    reflectToAttribute: true
-                },
-                lonLat: {
-                    type: Array,
-                    notify: true,
+                    //readOnly: true,
                     reflectToAttribute: true
                 }
-
             },
             start: function() {
                 console.log('listening');
@@ -146,85 +135,85 @@
                 //this.$['voice-search'].textContent = this.phrase;
             },
             _handleResponse: function(request) {
-            console.log(this.$.ajax.lastResponse);
-            data = this.$.ajax.lastResponse;
-            if (data.result.action == 'input.unknown') {
-                alert("Say something smarter.");
-            }
-            if (data.result.action == 'clear_map') {
-                this.dataSets = [];
-            }
-
-            if (data.result.action == 'pan_map') {
-                // lat = X
-                // lon = Y
-                x = this.lonLat[0];
-                y = this.lonLat[1];
-                var pan_amt = (parseInt(data.result.parameters.pan_number) || 1);
-
-                pan_amt = pan_amt * ((1 + (1 / this.zoomLevel)) / this.zoomLevel);
-                console.log('z: ' + this.zoomLevel + ' p: ' + pan_amt);
-                switch(data.result.parameters.pan_direction) {
-                    case 'up':
-                        y = y + pan_amt
-                        break;
-                    case 'down':
-                        y = y - pan_amt;
-                        break;
-                    case 'left':
-                        x = x - pan_amt;
-                        break;
-                    case 'right':
-                        x = x + pan_amt;
-                        break;
-
+                console.log(this.$.ajax.lastResponse);
+                data = this.$.ajax.lastResponse;
+                if (data.result.action == 'input.unknown') {
+                    alert("Say something smarter.");
                 }
-                this.lonLat = [x, y];
-            }
-
-            if (data.result.action == 'change_zoom') {
-                var zoom = parseInt(this.zoomLevel);
-                console.log('current zoom: ' + zoom)
-                if (data.result.parameters.zoom_action == 'to') {
-                    zoom = parseInt(data.result.parameters.zoom_number);
-                }
-                else if (data.result.parameters.zoom_action == 'in') {
-                    zoom = zoom + (parseInt(data.result.parameters.zoom_number) || 1)
-                }
-                else if (data.result.parameters.zoom_action == 'out') {
-                    zoom = zoom - (parseInt(data.result.parameters.zoom_number) || 1)
-                }
-                else {
-                    // TODO fix this
-                    alert("I Don't Know What You Mean");
+                if (data.result.action == 'clear_map') {
+                    this.dataSets = [];
                 }
 
-                console.log('New Zoom: ' + zoom);
-                this.zoomLevel = zoom;
-            }
-            if (data.result.action == 'load_dataset') {
-                this.dataSets = _.union(this.dataSets, data.result.parameters.dataset);
-                console.log(this.dataSets);
-            }
-            if (data.result.parameters.location) {
-                    if (data.result.parameters.location['zip-code']) {
-                        //geocoder.query(data.result.parameters.location['zip-code']);
-                        result = data.result.parameters.location['zip-code'];
-                        zoom = 10;
-                    } else if (data.result.parameters.location['street-address']) {
-                        //geocoder.query(data.result.parameters.location['street-address'])
-                        result = data.result.parameters.location['street-address'];
-                        zoom = 15;
-                        console.log("street-address " + result)
-                    } else if (data.result.parameters.location['geo-city-us']) {
-                        //geocoder.query(data.result.parameters.location['geo-city-us'])
-                        result = data.result.parameters.location['geo-city-us']
-                        zoom = 11;
-                        console.log("geo-city-us " + result)
+                if (data.result.action == 'pan_map') {
+                    // lat = X
+                    // lon = Y
+                    x = this.lonLat[0];
+                    y = this.lonLat[1];
+                    var pan_amt = (parseInt(data.result.parameters.pan_number) || 1);
+
+                    pan_amt = pan_amt * ((1 + (1 / this.zoomLevel)) / this.zoomLevel);
+                    console.log('z: ' + this.zoomLevel + ' p: ' + pan_amt);
+                    switch(data.result.parameters.pan_direction) {
+                        case 'up':
+                            y = y + pan_amt
+                            break;
+                        case 'down':
+                            y = y - pan_amt;
+                            break;
+                        case 'left':
+                            x = x - pan_amt;
+                            break;
+                        case 'right':
+                            x = x + pan_amt;
+                            break;
+
                     }
-                    this.geoSearchTerm = result;
+                    this.lonLat = [x, y];
+                }
+
+                if (data.result.action == 'change_zoom') {
+                    var zoom = parseInt(this.zoomLevel);
+                    console.log('current zoom: ' + zoom)
+                    if (data.result.parameters.zoom_action == 'to') {
+                        zoom = parseInt(data.result.parameters.zoom_number);
+                    }
+                    else if (data.result.parameters.zoom_action == 'in') {
+                        zoom = zoom + (parseInt(data.result.parameters.zoom_number) || 1)
+                    }
+                    else if (data.result.parameters.zoom_action == 'out') {
+                        zoom = zoom - (parseInt(data.result.parameters.zoom_number) || 1)
+                    }
+                    else {
+                        // TODO fix this
+                        alert("I Don't Know What You Mean");
+                    }
+
+                    console.log('New Zoom: ' + zoom);
                     this.zoomLevel = zoom;
-            }
+                }
+                if (data.result.action == 'load_dataset') {
+                    this.dataSets = _.union(this.dataSets, data.result.parameters.dataset);
+                    console.log(this.dataSets);
+                }
+                if (data.result.parameters.location) {
+                        if (data.result.parameters.location['zip-code']) {
+                            //geocoder.query(data.result.parameters.location['zip-code']);
+                            result = data.result.parameters.location['zip-code'];
+                            zoom = 10;
+                        } else if (data.result.parameters.location['street-address']) {
+                            //geocoder.query(data.result.parameters.location['street-address'])
+                            result = data.result.parameters.location['street-address'];
+                            zoom = 15;
+                            console.log("street-address " + result)
+                        } else if (data.result.parameters.location['geo-city-us']) {
+                            //geocoder.query(data.result.parameters.location['geo-city-us'])
+                            result = data.result.parameters.location['geo-city-us']
+                            zoom = 11;
+                            console.log("geo-city-us " + result)
+                        }
+                        this.set('geoSearchTerm', result);
+                        //this.zoomLevel = zoom;
+                }
             },
             _phraseChanged: function(newPhrase, oldPhrase) {
                 console.log(newPhrase);
@@ -235,12 +224,8 @@
                                 lang: "en",
                                 sessionId: "polymap-1"
                             });
-                    console.log(this.$.ajax)
                     this.$.ajax.generateRequest();
                 }
-            },
-            _responsePhraseChanged: function(newPhrase, oldPhrase) {
-                console.log(newPhrase);
             }
         });
     </script>

@@ -8,7 +8,6 @@
     <link rel="import" href="../bower_components/polymer/polymer.html">
     <link rel="import" href="../components/vk-map.html">
     <link rel="import" href="../components/vk-voice-search.html">
-    <link rel="import" href="../components/vk-geocoder.html">
     <link rel="import" href="../components/vk-remote-control.html">
     <link rel="import" href="../components/vk-map-controller.html">
     <title></title>
@@ -50,21 +49,16 @@
             map-config-in=[[mapConfigRequest]]
             map-config-out={{mapConfigOut}}
             map-is-locked={{isLocked}}>
-            <!--<vk-voice-search active={{active}}
+            <vk-voice-search active={{active}}
                 phrase="{{phrase}}"
                 data-sets="{{dataSets}}"
                 geo-search-term="{{geoSearchTerm}}"
-                zoom-level={{zoomLevel}}
-                lon-lat="{{lonLat}}">
-            </vk-voice-search>-->
+                map-config-request={{mapConfigRequest}}>
+            </vk-voice-search>
             <vk-remote-control id='vk-remote-control'
                 map-config=[[mapConfigOut]]
                 map-config-request={{mapConfigRequest}}>
             </vk-remote-control>
-            <!--<vk-geocoder
-                geo-search-term="{{geoSearchTerm}}"
-                lon-lat="{{lonLat}}">
-            </vk-geocoder>-->
             <!--$$('vk-map')[0].set('lonLat', [-81, 20]) -->
             <vk-map id='vk-map'
                 current-map-state={{currentMapState}}

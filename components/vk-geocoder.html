@@ -30,13 +30,16 @@
                     value: "",
                     observer: '_geoSearchTermChanged',
                     notify: true,
-                    reflectToAttribute: true
+                    reflectToAttribute: true,
+                    readOnly: false
                 },
-                lonLat: {
-                    type: Array,
+                // Upward Flow
+                mapConfigRequest: {
+                    type: Object,
                     notify: true,
+                    readOnly: true,
                     reflectToAttribute: true
-                },
+                }
             },
 
             ready: function() {
@@ -62,8 +65,15 @@
             },
             _handleResponse: function(request) {
                 response = this.$.geocoder.lastResponse;
-                console.log(response);
-                this.lonLat = response.features[0].geometry.coordinates;
+                coordinates = response.features[0].geometry.coordinates;
+                var updatedMapConfig = {
+                    // explicit as hell.
+                    lonLat: [coordinates[0], coordinates[1]],
+                    zoom: 11
+                };
+                request = {};
+                request[this.id] = updatedMapConfig;
+                this._setMapConfigRequest(request);
             }
         });
     </script>
