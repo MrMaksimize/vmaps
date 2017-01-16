@@ -1,0 +1,37 @@
+<link rel="import" href="../bower_components/app-route/app-location.html" />
+<dom-module id="vk-router">
+    <template>
+        <app-location route="{{route}}" query-params="{{queryParams}}"></app-location>
+    </template>
+
+    <script type="text/javascript">
+        Polymer({
+            is: 'vk-router',
+            properties: {
+                route: {
+                    type: Object
+                },
+                queryParams: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    }
+                },
+                appOptions: {
+                    type: Object,
+                    notify: true
+                }
+            },
+            observers: ['_computeAppOptions(queryParams, queryParams.*)'],
+            _computeAppOptions: function(queryParams) {
+                var options = {};
+                Object.assign(options, {
+                    canSubscribe: queryParams.controller ? false : true,
+                    canPublish: queryParams.controller ? true : false
+                });
+                this.set('appOptions', {});
+                this.set('appOptions', options);
+            },
+        });
+    </script>
+</dom-module>

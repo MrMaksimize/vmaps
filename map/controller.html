@@ -10,6 +10,7 @@
     <link rel="import" href="../components/vk-voice-search.html">
     <link rel="import" href="../components/vk-remote-control.html">
     <link rel="import" href="../components/vk-map-controller.html">
+    <link rel="import" href="../components/vk-router.html">
     <title></title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <style>
@@ -48,7 +49,9 @@
             current-map-state={{currentMapState}}
             map-config-in=[[mapConfigRequest]]
             map-config-out={{mapConfigOut}}
-            map-is-locked={{isLocked}}>
+            map-is-locked={{isLocked}}
+            can-subscribe=[[appOptions.canSubscribe]]
+            can-publish=[[appOptions.canPublish]]>
             <vk-voice-search active={{active}}
                 phrase="{{phrase}}"
                 data-sets="{{dataSets}}"
@@ -70,6 +73,7 @@
             <vk-api access-token="" base-url="" phrase="[[phrase]]" response="{{placeData}}">
             </vk-api> -->
         </vk-map-controller>
+        <vk-router app-options={{appOptions}}></vk-router>
 
     </template>
 

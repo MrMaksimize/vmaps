@@ -11,6 +11,14 @@
         Polymer({
             is: 'vk-map-controller',
             properties: {
+                canSubscribe: {
+                    type: Boolean,
+                    value: true
+                },
+                canPublish: {
+                    type: Boolean,
+                    value: false
+                },
                 dataSets: {
                     type: Array,
                     notify: true,
@@ -44,6 +52,8 @@
                     reflectToAttribute: true,
                     readOnly: true,
                 }
+                // Can publish property
+                // Can subscribe property
             },
             attached: function() {
                 console.log('map-controller attached');
@@ -56,7 +66,7 @@
                 sender = Object.keys(this.mapConfigIn)[0]
                 request = this.mapConfigIn[sender];
                 console.log(request);
-                if (sender === 'vk-map') {
+                if (sender === 'vk-map' && this.canPublish) {
                     // vk-map requests should only get dispatched to socket.
                     receiver = 'vk-remote-control';
                     mapConfigOut = {}
@@ -66,7 +76,7 @@
                     this._setMapConfigOut(mapConfigOut);
 
                 }
-                else if (sender === 'vk-remote-control' || sender ===
+                else if ((sender === 'vk-remote-control' && this.canSubscribe) || sender ===
                         'vk-geocoder' || sender === 'vk-voice-search') {
                     receiver = 'vk-map'
                     mapConfigOut = {}
