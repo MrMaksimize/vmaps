@@ -24,14 +24,23 @@
             },
             observers: ['_computeAppOptions(queryParams, queryParams.*)'],
             _computeAppOptions: function(queryParams) {
-                var options = {};
-                Object.assign(options, {
-                    canSubscribe: queryParams.controller ? false : true,
-                    canPublish: queryParams.controller ? true : false
-                });
-                this.set('appOptions', {});
-                this.set('appOptions', options);
+                this.debounce('compute-app-options', function() {
+                    var options = {};
+                    var syncId = this._parseSyncId(queryParams.syncId);
+                    Object.assign(options, {
+                        canSubscribe: queryParams.controller ? false : true,
+                        canPublish: queryParams.controller ? true : false,
+                        syncId: syncId || 1
+                    });
+                    this.set('appOptions', {});
+                    this.set('appOptions', options);
+                }, 50);
             },
+            _parseSyncId: function(rawId) {
+                if (!rawId || typeof rawId !== 'string') return;
+                var syncId = rawId.replace(/[^0-9]/g, '')
+                return parseInt(syncId);
+            }
         });
     </script>
 </dom-module>

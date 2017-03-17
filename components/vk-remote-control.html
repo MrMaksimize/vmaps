@@ -17,6 +17,10 @@
                     notify: true,
                     reflectToAttribute: true
                 },
+                syncId: {
+                    type: Number,
+                    observer: '_init'
+                },
                 // Downward flow
                 mapConfig: {
                     type: Object,
@@ -35,14 +39,29 @@
             observers: [
                 '_handleMapConfigChanged(mapConfig.*)'
             ],
-            attached: function() {
-                console.log('attach vkrc');
-                this.socket = new WebSocket('ws://localhost:8080');
-                this.connection = new sharedb.Connection(this.socket);
-                this.doc = this.connection.get('vmaps', 'controller');
-                // Get initial value of document and subscribe to changes
-                this.doc.subscribe(this._handleSocketMsg.bind(this));
-                this.doc.on('op', this._handleSocketMsg.bind(this));
+            _init: function() {
+                if(!this._initialized) {
+                    console.log('attach vkrc');
+                    this.socket = new WebSocket('ws://localhost:8080');
+                    this.connection = new sharedb.Connection(this.socket);
+                    //doc = this.connection.
+                    this.doc = this.connection.get('vmaps',
+                            this.syncId.toString());
+
+                    if (this.doc.type === null) {
+                      this.doc.create({
+                        'mapConfig': {
+                          lonLat: [-117, 32],
+                          zoom: 7
+                         }
+                      });
+                    }
+                    debugger;
+                    // Get initial value of document and subscribe to changes
+                    this.doc.subscribe(this._handleSocketMsg.bind(this));
+                    this.doc.on('op', this._handleSocketMsg.bind(this));
+                    this.set('_initialized', true);
+                }
             },
             _handleMapConfigChanged: function() {
                 console.log('rc mapconfig change')
