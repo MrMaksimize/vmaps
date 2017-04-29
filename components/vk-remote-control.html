@@ -42,7 +42,7 @@
             _init: function() {
                 if(!this._initialized) {
                     console.log('attach vkrc');
-                    this.socket = new WebSocket('ws://localhost:8080');
+                    this.socket = new WebSocket('ws://localhost:9993');
                     this.connection = new sharedb.Connection(this.socket);
                     //doc = this.connection.
                     this.doc = this.connection.get('vmaps',
